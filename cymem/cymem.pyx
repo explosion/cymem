@@ -7,7 +7,7 @@ from libcpp.vector cimport vector
 
 cdef class Pool:
     def __cinit__(self):
-        pass
+        self.size = 0
 
     def __dealloc__(self):
         cdef void* addr
@@ -18,11 +18,13 @@ cdef class Pool:
         cdef void* addr = PyMem_Malloc(number * size)
         memset(addr, 0, number * size)
         self._addresses.push_back(addr)
+        self.size += number * size
         return addr
 
     cdef void* realloc(self, void* addr, size_t n) except NULL:
+        self.size += n
         cdef size_t i
-        for i in range(self.size()):
+        for i in range(self._addresses.size()):
             if self._addresses[i] == addr:
                 self._addresses[i] = PyMem_Realloc(addr, n)
                 return self._addresses[i]
