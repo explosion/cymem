@@ -1,3 +1,5 @@
+# cython: embedsignature=True
+
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 from libc.string cimport memset
 
@@ -7,9 +9,14 @@ cdef class Pool:
     garbage collected.  This provides an easy way to avoid memory leaks, and 
     removes the need for deallocation functions for complicated structs.
 
+    >>> from cymem.cymem cimport Pool
+    >>> cdef Pool mem = Pool()
+    >>> data1 = <int*>mem.alloc(10, sizeof(int))
+    >>> data2 = <float*>mem.alloc(12, sizeof(float))
+
     Attributes:
         size (size_t): The current size (in bytes) allocated by the pool.
-        addresses (set): The set of currently allocated addresses. Read-only.
+        addresses (dict): The currently allocated addresses and their sizes. Read-only.
     """
     def __cinit__(self):
         self.size = 0
@@ -70,6 +77,10 @@ cdef class Pool:
 cdef class Address:
     """A block of number * size-bytes of 0-initialized memory, tied to a Python
     ref-counted object. When the object is garbage collected, the memory is freed.
+
+    >>> from cymem.cymem cimport Address
+    >>> cdef Address address = Address(10, sizeof(double))
+    >>> d10 = <double*>address.ptr
 
     Args:
         number (size_t): The number of elements in the memory block.
