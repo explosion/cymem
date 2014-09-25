@@ -420,7 +420,7 @@ struct __pyx_obj_5cymem_5cymem_Address;
 /* "cymem/cymem.pxd":1
  * cdef class Pool:             # <<<<<<<<<<<<<<
  *     cdef readonly size_t size
- *     cdef readonly set addresses
+ *     cdef readonly dict addresses
  */
 struct __pyx_obj_5cymem_5cymem_Pool {
   PyObject_HEAD
@@ -434,11 +434,11 @@ struct __pyx_obj_5cymem_5cymem_Pool {
  * 
  * 
  * cdef class Address:             # <<<<<<<<<<<<<<
- *     cdef size_t addr
+ *     cdef void* ptr
  */
 struct __pyx_obj_5cymem_5cymem_Address {
   PyObject_HEAD
-  size_t addr;
+  void *ptr;
 };
 
 
@@ -541,17 +541,7 @@ static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
 
 static CYTHON_INLINE int __Pyx_CheckKeywordStrings(PyObject *kwdict, const char* function_name, int kw_allowed);
 
-static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb);
-static CYTHON_INLINE void __Pyx_ErrFetch(PyObject **type, PyObject **value, PyObject **tb);
-
-static void __Pyx_WriteUnraisable(const char *name, int clineno,
-                                  int lineno, const char *filename,
-                                  int full_traceback);
-
-static CYTHON_INLINE int __Pyx_PySequence_Contains(PyObject* item, PyObject* seq, int eq) {
-    int result = PySequence_Contains(seq, item);
-    return unlikely(result < 0) ? result : (result == (eq == Py_EQ));
-}
+static CYTHON_INLINE int __Pyx_IterFinish(void);
 
 #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
@@ -559,13 +549,51 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
 #define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
 #endif
 
-static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
-
 #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg);
 #endif
 
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
+#else
+#define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
+#endif
+
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
+
+static PyObject* __Pyx_PyObject_CallMethod0(PyObject* obj, PyObject* method_name);
+
+static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index);
+
+static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected);
+
+static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected);
+
+static CYTHON_INLINE void __Pyx_RaiseNoneNotIterableError(void);
+
+static void __Pyx_UnpackTupleError(PyObject *, Py_ssize_t index);
+
+static CYTHON_INLINE int __Pyx_unpack_tuple2(PyObject* tuple, PyObject** value1, PyObject** value2,
+                                             int is_tuple, int has_known_size, int decref_tuple);
+
+static CYTHON_INLINE PyObject* __Pyx_dict_iterator(PyObject* dict, int is_dict, PyObject* method_name,
+                                                   Py_ssize_t* p_orig_length, int* p_is_dict);
+static CYTHON_INLINE int __Pyx_dict_iter_next(PyObject* dict_or_iter, Py_ssize_t orig_length, Py_ssize_t* ppos,
+                                              PyObject** pkey, PyObject** pvalue, PyObject** pitem, int is_dict);
+
+static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb);
+static CYTHON_INLINE void __Pyx_ErrFetch(PyObject **type, PyObject **value, PyObject **tb);
+
+static void __Pyx_WriteUnraisable(const char *name, int clineno,
+                                  int lineno, const char *filename,
+                                  int full_traceback);
+
+static CYTHON_INLINE int __Pyx_PyDict_Contains(PyObject* item, PyObject* dict, int eq) {
+    int result = PyDict_Contains(dict, item);
+    return unlikely(result < 0) ? result : (result == (eq == Py_EQ));
+}
+
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
 
 static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
 
@@ -604,8 +632,8 @@ static int __Pyx_check_binary_version(void);
 
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
-static void *__pyx_f_5cymem_5cymem_4Pool_alloc(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self, size_t __pyx_v_number, size_t __pyx_v_size); /* proto*/
-static void *__pyx_f_5cymem_5cymem_4Pool_realloc(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self, void *__pyx_v_p, size_t __pyx_v_n); /* proto*/
+static void *__pyx_f_5cymem_5cymem_4Pool_alloc(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self, size_t __pyx_v_number, size_t __pyx_v_elem_size); /* proto*/
+static void *__pyx_f_5cymem_5cymem_4Pool_realloc(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self, void *__pyx_v_p, size_t __pyx_v_new_size); /* proto*/
 static void *__pyx_f_5cymem_5cymem_4Pool_free(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self, void *__pyx_v_p); /* proto*/
 
 /* Module declarations from 'cpython.mem' */
@@ -624,29 +652,32 @@ static int __pyx_pf_5cymem_5cymem_4Pool___cinit__(struct __pyx_obj_5cymem_5cymem
 static void __pyx_pf_5cymem_5cymem_4Pool_2__dealloc__(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_5cymem_5cymem_4Pool_4size___get__(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_5cymem_5cymem_4Pool_9addresses___get__(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self); /* proto */
-static int __pyx_pf_5cymem_5cymem_7Address___cinit__(struct __pyx_obj_5cymem_5cymem_Address *__pyx_v_self, size_t __pyx_v_number, size_t __pyx_v_size); /* proto */
+static int __pyx_pf_5cymem_5cymem_7Address___cinit__(struct __pyx_obj_5cymem_5cymem_Address *__pyx_v_self, size_t __pyx_v_number, size_t __pyx_v_elem_size); /* proto */
+static PyObject *__pyx_pf_5cymem_5cymem_7Address_4addr___get__(struct __pyx_obj_5cymem_5cymem_Address *__pyx_v_self); /* proto */
 static void __pyx_pf_5cymem_5cymem_7Address_2__dealloc__(struct __pyx_obj_5cymem_5cymem_Address *__pyx_v_self); /* proto */
 static PyObject *__pyx_tp_new_5cymem_5cymem_Pool(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_5cymem_5cymem_Address(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static char __pyx_k_add[] = "add";
+static char __pyx_k_pop[] = "pop";
 static char __pyx_k_main[] = "__main__";
-static char __pyx_k_size[] = "size";
 static char __pyx_k_test[] = "__test__";
 static char __pyx_k_number[] = "number";
-static char __pyx_k_remove[] = "remove";
+static char __pyx_k_elem_size[] = "elem_size";
 static char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static char __pyx_k_MemoryError[] = "MemoryError";
-static char __pyx_k_Realloc_requires_n_0[] = "Realloc requires n > 0";
+static char __pyx_k_Realloc_requires_new_size_0[] = "Realloc requires new_size > 0";
 static char __pyx_k_Pointer_d_not_found_in_Pool_s[] = "Pointer %d not found in Pool %s";
 static char __pyx_k_Failed_to_resize_pointer_d_to_d[] = "Failed to resize pointer %d to %d bytes";
 static PyObject *__pyx_kp_s_Failed_to_resize_pointer_d_to_d;
 static PyObject *__pyx_n_s_MemoryError;
 static PyObject *__pyx_kp_s_Pointer_d_not_found_in_Pool_s;
-static PyObject *__pyx_kp_s_Realloc_requires_n_0;
+static PyObject *__pyx_kp_s_Realloc_requires_new_size_0;
+static PyObject *__pyx_n_s_add;
+static PyObject *__pyx_n_s_elem_size;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_number;
+static PyObject *__pyx_n_s_pop;
 static PyObject *__pyx_n_s_pyx_vtable;
-static PyObject *__pyx_n_s_remove;
-static PyObject *__pyx_n_s_size;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_tuple_;
 
@@ -655,7 +686,7 @@ static PyObject *__pyx_tuple_;
  *     """
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
  *         self.size = 0
- *         self.addresses = set()
+ *         self.addresses = {}
  */
 
 /* Python wrapper */
@@ -687,7 +718,7 @@ static int __pyx_pf_5cymem_5cymem_4Pool___cinit__(struct __pyx_obj_5cymem_5cymem
  *     """
  *     def __cinit__(self):
  *         self.size = 0             # <<<<<<<<<<<<<<
- *         self.addresses = set()
+ *         self.addresses = {}
  * 
  */
   __pyx_v_self->size = 0;
@@ -695,11 +726,11 @@ static int __pyx_pf_5cymem_5cymem_4Pool___cinit__(struct __pyx_obj_5cymem_5cymem
   /* "cymem/cymem.pyx":16
  *     def __cinit__(self):
  *         self.size = 0
- *         self.addresses = set()             # <<<<<<<<<<<<<<
+ *         self.addresses = {}             # <<<<<<<<<<<<<<
  * 
  *     def __dealloc__(self):
  */
-  __pyx_t_1 = PySet_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->addresses);
@@ -712,7 +743,7 @@ static int __pyx_pf_5cymem_5cymem_4Pool___cinit__(struct __pyx_obj_5cymem_5cymem
  *     """
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
  *         self.size = 0
- *         self.addresses = set()
+ *         self.addresses = {}
  */
 
   /* function exit code */
@@ -728,7 +759,7 @@ static int __pyx_pf_5cymem_5cymem_4Pool___cinit__(struct __pyx_obj_5cymem_5cymem
 }
 
 /* "cymem/cymem.pyx":18
- *         self.addresses = set()
+ *         self.addresses = {}
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
  *         cdef size_t addr
@@ -750,9 +781,12 @@ static void __pyx_pf_5cymem_5cymem_4Pool_2__dealloc__(struct __pyx_obj_5cymem_5c
   size_t __pyx_v_addr;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *(*__pyx_t_2)(PyObject *);
-  PyObject *__pyx_t_3 = NULL;
-  size_t __pyx_t_4;
+  Py_ssize_t __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  int __pyx_t_4;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  size_t __pyx_t_7;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -765,47 +799,38 @@ static void __pyx_pf_5cymem_5cymem_4Pool_2__dealloc__(struct __pyx_obj_5cymem_5c
  *             PyMem_Free(<void*>addr)
  * 
  */
-  __pyx_t_1 = PyObject_GetIter(__pyx_v_self->addresses); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  for (;;) {
-    {
-      __pyx_t_3 = __pyx_t_2(__pyx_t_1);
-      if (unlikely(!__pyx_t_3)) {
-        PyObject* exc_type = PyErr_Occurred();
-        if (exc_type) {
-          if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-        }
-        break;
-      }
-      __Pyx_GOTREF(__pyx_t_3);
-    }
-    __pyx_t_4 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_4 == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_v_addr = __pyx_t_4;
+  __pyx_t_2 = 0;
+  if (unlikely(__pyx_v_self->addresses == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_5 = __Pyx_dict_iterator(__pyx_v_self->addresses, 1, ((PyObject *)NULL), (&__pyx_t_3), (&__pyx_t_4)); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_1);
+  __pyx_t_1 = __pyx_t_5;
+  __pyx_t_5 = 0;
+  while (1) {
+    __pyx_t_6 = __Pyx_dict_iter_next(__pyx_t_1, __pyx_t_3, &__pyx_t_2, &__pyx_t_5, NULL, NULL, __pyx_t_4);
+    if (unlikely(__pyx_t_6 == 0)) break;
+    if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_7 = __Pyx_PyInt_As_size_t(__pyx_t_5); if (unlikely((__pyx_t_7 == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_v_addr = __pyx_t_7;
 
     /* "cymem/cymem.pyx":21
  *         cdef size_t addr
  *         for addr in self.addresses:
  *             PyMem_Free(<void*>addr)             # <<<<<<<<<<<<<<
  * 
- *     cdef void* alloc(self, size_t number, size_t size) except NULL:
+ *     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:
  */
     PyMem_Free(((void *)__pyx_v_addr));
-
-    /* "cymem/cymem.pyx":20
- *     def __dealloc__(self):
- *         cdef size_t addr
- *         for addr in self.addresses:             # <<<<<<<<<<<<<<
- *             PyMem_Free(<void*>addr)
- * 
- */
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "cymem/cymem.pyx":18
- *         self.addresses = set()
+ *         self.addresses = {}
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
  *         cdef size_t addr
@@ -816,7 +841,7 @@ static void __pyx_pf_5cymem_5cymem_4Pool_2__dealloc__(struct __pyx_obj_5cymem_5c
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_5);
   __Pyx_WriteUnraisable("cymem.cymem.Pool.__dealloc__", __pyx_clineno, __pyx_lineno, __pyx_filename, 0);
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -825,71 +850,74 @@ static void __pyx_pf_5cymem_5cymem_4Pool_2__dealloc__(struct __pyx_obj_5cymem_5c
 /* "cymem/cymem.pyx":23
  *             PyMem_Free(<void*>addr)
  * 
- *     cdef void* alloc(self, size_t number, size_t size) except NULL:             # <<<<<<<<<<<<<<
- *         """Allocate a 0-initialized number*size-byte block of memory, and remember
- *         its address. The block will be freed when the Pool is garbage collected.
+ *     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:             # <<<<<<<<<<<<<<
+ *         """Allocate a 0-initialized number*elem_size-byte block of memory, and
+ *         remember its address. The block will be freed when the Pool is garbage
  */
 
-static void *__pyx_f_5cymem_5cymem_4Pool_alloc(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self, size_t __pyx_v_number, size_t __pyx_v_size) {
+static void *__pyx_f_5cymem_5cymem_4Pool_alloc(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self, size_t __pyx_v_number, size_t __pyx_v_elem_size) {
   void *__pyx_v_p;
   void *__pyx_r;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  int __pyx_t_2;
+  PyObject *__pyx_t_2 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("alloc", 0);
 
-  /* "cymem/cymem.pyx":27
- *         its address. The block will be freed when the Pool is garbage collected.
- *         """
- *         cdef void* p = PyMem_Malloc(number * size)             # <<<<<<<<<<<<<<
- *         memset(p, 0, number * size)
- *         self.addresses.add(<size_t>p)
- */
-  __pyx_v_p = PyMem_Malloc((__pyx_v_number * __pyx_v_size));
-
   /* "cymem/cymem.pyx":28
+ *         collected.
  *         """
- *         cdef void* p = PyMem_Malloc(number * size)
- *         memset(p, 0, number * size)             # <<<<<<<<<<<<<<
- *         self.addresses.add(<size_t>p)
- *         self.size += number * size
+ *         cdef void* p = PyMem_Malloc(number * elem_size)             # <<<<<<<<<<<<<<
+ *         memset(p, 0, number * elem_size)
+ *         self.addresses[<size_t>p] = number * elem_size
  */
-  memset(__pyx_v_p, 0, (__pyx_v_number * __pyx_v_size));
+  __pyx_v_p = PyMem_Malloc((__pyx_v_number * __pyx_v_elem_size));
 
   /* "cymem/cymem.pyx":29
- *         cdef void* p = PyMem_Malloc(number * size)
- *         memset(p, 0, number * size)
- *         self.addresses.add(<size_t>p)             # <<<<<<<<<<<<<<
- *         self.size += number * size
- *         return p
+ *         """
+ *         cdef void* p = PyMem_Malloc(number * elem_size)
+ *         memset(p, 0, number * elem_size)             # <<<<<<<<<<<<<<
+ *         self.addresses[<size_t>p] = number * elem_size
+ *         self.size += number * elem_size
  */
-  if (unlikely(__pyx_v_self->addresses == Py_None)) {
-    PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "add");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 29; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_p)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 29; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PySet_Add(__pyx_v_self->addresses, __pyx_t_1); if (unlikely(__pyx_t_2 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 29; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  memset(__pyx_v_p, 0, (__pyx_v_number * __pyx_v_elem_size));
 
   /* "cymem/cymem.pyx":30
- *         memset(p, 0, number * size)
- *         self.addresses.add(<size_t>p)
- *         self.size += number * size             # <<<<<<<<<<<<<<
+ *         cdef void* p = PyMem_Malloc(number * elem_size)
+ *         memset(p, 0, number * elem_size)
+ *         self.addresses[<size_t>p] = number * elem_size             # <<<<<<<<<<<<<<
+ *         self.size += number * elem_size
+ *         return p
+ */
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t((__pyx_v_number * __pyx_v_elem_size)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  if (unlikely(__pyx_v_self->addresses == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_2 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_p)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (unlikely(PyDict_SetItem(__pyx_v_self->addresses, __pyx_t_2, __pyx_t_1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "cymem/cymem.pyx":31
+ *         memset(p, 0, number * elem_size)
+ *         self.addresses[<size_t>p] = number * elem_size
+ *         self.size += number * elem_size             # <<<<<<<<<<<<<<
  *         return p
  * 
  */
-  __pyx_v_self->size = (__pyx_v_self->size + (__pyx_v_number * __pyx_v_size));
+  __pyx_v_self->size = (__pyx_v_self->size + (__pyx_v_number * __pyx_v_elem_size));
 
-  /* "cymem/cymem.pyx":31
- *         self.addresses.add(<size_t>p)
- *         self.size += number * size
+  /* "cymem/cymem.pyx":32
+ *         self.addresses[<size_t>p] = number * elem_size
+ *         self.size += number * elem_size
  *         return p             # <<<<<<<<<<<<<<
  * 
- *     cdef void* realloc(self, void* p, size_t n) except NULL:
+ *     cdef void* realloc(self, void* p, size_t new_size) except NULL:
  */
   __pyx_r = __pyx_v_p;
   goto __pyx_L0;
@@ -897,14 +925,15 @@ static void *__pyx_f_5cymem_5cymem_4Pool_alloc(struct __pyx_obj_5cymem_5cymem_Po
   /* "cymem/cymem.pyx":23
  *             PyMem_Free(<void*>addr)
  * 
- *     cdef void* alloc(self, size_t number, size_t size) except NULL:             # <<<<<<<<<<<<<<
- *         """Allocate a 0-initialized number*size-byte block of memory, and remember
- *         its address. The block will be freed when the Pool is garbage collected.
+ *     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:             # <<<<<<<<<<<<<<
+ *         """Allocate a 0-initialized number*elem_size-byte block of memory, and
+ *         remember its address. The block will be freed when the Pool is garbage
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_AddTraceback("cymem.cymem.Pool.alloc", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -912,17 +941,18 @@ static void *__pyx_f_5cymem_5cymem_4Pool_alloc(struct __pyx_obj_5cymem_5cymem_Po
   return __pyx_r;
 }
 
-/* "cymem/cymem.pyx":33
+/* "cymem/cymem.pyx":34
  *         return p
  * 
- *     cdef void* realloc(self, void* p, size_t n) except NULL:             # <<<<<<<<<<<<<<
- *         """Resizes the memory block pointed to by p to n bytes, returning a
- *         non-NULL pointer to the new block. The contents will be unchanged to the
+ *     cdef void* realloc(self, void* p, size_t new_size) except NULL:             # <<<<<<<<<<<<<<
+ *         """Resizes the memory block pointed to by p to new_size bytes, returning
+ *         a non-NULL pointer to the new block. The contents will be unchanged to
  */
 
-static void *__pyx_f_5cymem_5cymem_4Pool_realloc(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self, void *__pyx_v_p, size_t __pyx_v_n) {
+static void *__pyx_f_5cymem_5cymem_4Pool_realloc(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self, void *__pyx_v_p, size_t __pyx_v_new_size) {
   size_t __pyx_v_addr;
   void *__pyx_v_new_p;
+  PyObject *__pyx_v_msg = NULL;
   void *__pyx_r;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -932,36 +962,41 @@ static void *__pyx_f_5cymem_5cymem_4Pool_realloc(struct __pyx_obj_5cymem_5cymem_
   PyObject *__pyx_t_5 = NULL;
   PyObject *__pyx_t_6 = NULL;
   PyObject *__pyx_t_7 = NULL;
-  int __pyx_t_8;
+  PyObject *__pyx_t_8 = NULL;
+  size_t __pyx_t_9;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("realloc", 0);
 
-  /* "cymem/cymem.pyx":43
+  /* "cymem/cymem.pyx":44
  *         """
  *         cdef size_t addr
  *         if addr not in self.addresses:             # <<<<<<<<<<<<<<
  *             raise MemoryError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
- *         if n == 0:
+ *         if new_size == 0:
  */
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_addr); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_addr); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = (__Pyx_PySequence_Contains(__pyx_t_1, __pyx_v_self->addresses, Py_NE)); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(__pyx_v_self->addresses == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_2 = (__Pyx_PyDict_Contains(__pyx_t_1, __pyx_v_self->addresses, Py_NE)); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_3 = (__pyx_t_2 != 0);
   if (__pyx_t_3) {
 
-    /* "cymem/cymem.pyx":44
+    /* "cymem/cymem.pyx":45
  *         cdef size_t addr
  *         if addr not in self.addresses:
  *             raise MemoryError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))             # <<<<<<<<<<<<<<
- *         if n == 0:
- *             raise MemoryError("Realloc requires n > 0")
+ *         if new_size == 0:
+ *             raise MemoryError("Realloc requires new_size > 0")
  */
-    __pyx_t_1 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_p)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_p)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
     __Pyx_GIVEREF(__pyx_t_1);
@@ -969,157 +1004,198 @@ static void *__pyx_f_5cymem_5cymem_4Pool_realloc(struct __pyx_obj_5cymem_5cymem_
     PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_v_self->addresses);
     __Pyx_GIVEREF(__pyx_v_self->addresses);
     __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_Pointer_d_not_found_in_Pool_s, __pyx_t_4); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_Pointer_d_not_found_in_Pool_s, __pyx_t_4); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
     __Pyx_GIVEREF(__pyx_t_1);
     __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "cymem/cymem.pyx":45
+  /* "cymem/cymem.pyx":46
  *         if addr not in self.addresses:
  *             raise MemoryError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
- *         if n == 0:             # <<<<<<<<<<<<<<
- *             raise MemoryError("Realloc requires n > 0")
- *         self.addresses.remove(addr)
+ *         if new_size == 0:             # <<<<<<<<<<<<<<
+ *             raise MemoryError("Realloc requires new_size > 0")
+ * 
  */
-  __pyx_t_3 = ((__pyx_v_n == 0) != 0);
+  __pyx_t_3 = ((__pyx_v_new_size == 0) != 0);
   if (__pyx_t_3) {
 
-    /* "cymem/cymem.pyx":46
+    /* "cymem/cymem.pyx":47
  *             raise MemoryError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
- *         if n == 0:
- *             raise MemoryError("Realloc requires n > 0")             # <<<<<<<<<<<<<<
- *         self.addresses.remove(addr)
- *         cdef void* new_p = PyMem_Realloc(p, n)
+ *         if new_size == 0:
+ *             raise MemoryError("Realloc requires new_size > 0")             # <<<<<<<<<<<<<<
+ * 
+ *         # Remove the old address, and subtract its size from our total.
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 46; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 46; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "cymem/cymem.pyx":47
- *         if n == 0:
- *             raise MemoryError("Realloc requires n > 0")
- *         self.addresses.remove(addr)             # <<<<<<<<<<<<<<
- *         cdef void* new_p = PyMem_Realloc(p, n)
+  /* "cymem/cymem.pyx":50
+ * 
+ *         # Remove the old address, and subtract its size from our total.
+ *         self.size -= self.addresses.pop(addr)             # <<<<<<<<<<<<<<
+ *         cdef void* new_p = PyMem_Realloc(p, new_size)
  *         if new_p == NULL:
  */
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->addresses, __pyx_n_s_remove); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_v_addr); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->size); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->addresses, __pyx_n_s_pop); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = NULL;
-  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_4))) {
-    __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_4);
-    if (likely(__pyx_t_6)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
-      __Pyx_INCREF(__pyx_t_6);
+  __pyx_t_6 = __Pyx_PyInt_FromSize_t(__pyx_v_addr); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_6);
+  __pyx_t_7 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_5))) {
+    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_5);
+    if (likely(__pyx_t_7)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+      __Pyx_INCREF(__pyx_t_7);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_4, function);
+      __Pyx_DECREF_SET(__pyx_t_5, function);
     }
   }
-  if (!__pyx_t_6) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
+  if (!__pyx_t_7) {
+    __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __Pyx_GOTREF(__pyx_t_4);
   } else {
-    __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_7);
-    PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_6); __Pyx_GIVEREF(__pyx_t_6); __pyx_t_6 = NULL;
-    PyTuple_SET_ITEM(__pyx_t_7, 0+1, __pyx_t_5);
-    __Pyx_GIVEREF(__pyx_t_5);
-    __pyx_t_5 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __pyx_t_8 = PyTuple_New(1+1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_8);
+    PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_7); __Pyx_GIVEREF(__pyx_t_7); __pyx_t_7 = NULL;
+    PyTuple_SET_ITEM(__pyx_t_8, 0+1, __pyx_t_6);
+    __Pyx_GIVEREF(__pyx_t_6);
+    __pyx_t_6 = 0;
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   }
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = PyNumber_InPlaceSubtract(__pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_9 = __Pyx_PyInt_As_size_t(__pyx_t_5); if (unlikely((__pyx_t_9 == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_v_self->size = __pyx_t_9;
 
-  /* "cymem/cymem.pyx":48
- *             raise MemoryError("Realloc requires n > 0")
- *         self.addresses.remove(addr)
- *         cdef void* new_p = PyMem_Realloc(p, n)             # <<<<<<<<<<<<<<
+  /* "cymem/cymem.pyx":51
+ *         # Remove the old address, and subtract its size from our total.
+ *         self.size -= self.addresses.pop(addr)
+ *         cdef void* new_p = PyMem_Realloc(p, new_size)             # <<<<<<<<<<<<<<
  *         if new_p == NULL:
- *             raise MemoryError("Failed to resize pointer %d to %d bytes" % (<size_t>p, <size_t>n))
+ *             msg =  "Failed to resize pointer %d to %d bytes" % (<size_t>p, new_size)
  */
-  __pyx_v_new_p = PyMem_Realloc(__pyx_v_p, __pyx_v_n);
+  __pyx_v_new_p = PyMem_Realloc(__pyx_v_p, __pyx_v_new_size);
 
-  /* "cymem/cymem.pyx":49
- *         self.addresses.remove(addr)
- *         cdef void* new_p = PyMem_Realloc(p, n)
+  /* "cymem/cymem.pyx":52
+ *         self.size -= self.addresses.pop(addr)
+ *         cdef void* new_p = PyMem_Realloc(p, new_size)
  *         if new_p == NULL:             # <<<<<<<<<<<<<<
- *             raise MemoryError("Failed to resize pointer %d to %d bytes" % (<size_t>p, <size_t>n))
- *         self.addresses.add(<size_t>new_p)
+ *             msg =  "Failed to resize pointer %d to %d bytes" % (<size_t>p, new_size)
+ *             raise MemoryError(msg)
  */
   __pyx_t_3 = ((__pyx_v_new_p == NULL) != 0);
   if (__pyx_t_3) {
 
-    /* "cymem/cymem.pyx":50
- *         cdef void* new_p = PyMem_Realloc(p, n)
+    /* "cymem/cymem.pyx":53
+ *         cdef void* new_p = PyMem_Realloc(p, new_size)
  *         if new_p == NULL:
- *             raise MemoryError("Failed to resize pointer %d to %d bytes" % (<size_t>p, <size_t>n))             # <<<<<<<<<<<<<<
+ *             msg =  "Failed to resize pointer %d to %d bytes" % (<size_t>p, new_size)             # <<<<<<<<<<<<<<
+ *             raise MemoryError(msg)
+ *         self.addresses.add(<size_t>new_p)
+ */
+    __pyx_t_5 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_p)); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_4 = __Pyx_PyInt_FromSize_t(__pyx_v_new_size); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_5);
+    __Pyx_GIVEREF(__pyx_t_5);
+    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_4);
+    __Pyx_GIVEREF(__pyx_t_4);
+    __pyx_t_5 = 0;
+    __pyx_t_4 = 0;
+    __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Failed_to_resize_pointer_d_to_d, __pyx_t_1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_v_msg = ((PyObject*)__pyx_t_4);
+    __pyx_t_4 = 0;
+
+    /* "cymem/cymem.pyx":54
+ *         if new_p == NULL:
+ *             msg =  "Failed to resize pointer %d to %d bytes" % (<size_t>p, new_size)
+ *             raise MemoryError(msg)             # <<<<<<<<<<<<<<
  *         self.addresses.add(<size_t>new_p)
  *         return new_p
  */
-    __pyx_t_1 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_p)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_INCREF(__pyx_v_msg);
+    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_msg);
+    __Pyx_GIVEREF(__pyx_v_msg);
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_n)); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_7);
-    PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_1);
-    __Pyx_GIVEREF(__pyx_t_1);
-    PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_4);
-    __Pyx_GIVEREF(__pyx_t_4);
-    __pyx_t_1 = 0;
-    __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Failed_to_resize_pointer_d_to_d, __pyx_t_7); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_7);
-    PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_4);
-    __Pyx_GIVEREF(__pyx_t_4);
-    __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_t_7, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "cymem/cymem.pyx":51
- *         if new_p == NULL:
- *             raise MemoryError("Failed to resize pointer %d to %d bytes" % (<size_t>p, <size_t>n))
+  /* "cymem/cymem.pyx":55
+ *             msg =  "Failed to resize pointer %d to %d bytes" % (<size_t>p, new_size)
+ *             raise MemoryError(msg)
  *         self.addresses.add(<size_t>new_p)             # <<<<<<<<<<<<<<
  *         return new_p
  * 
  */
-  if (unlikely(__pyx_v_self->addresses == Py_None)) {
-    PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "add");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_4 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_new_p)); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->addresses, __pyx_n_s_add); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 55; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_8 = PySet_Add(__pyx_v_self->addresses, __pyx_t_4); if (unlikely(__pyx_t_8 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_new_p)); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 55; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_8 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_4))) {
+    __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_4);
+    if (likely(__pyx_t_8)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+      __Pyx_INCREF(__pyx_t_8);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_4, function);
+    }
+  }
+  if (!__pyx_t_8) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 55; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+  } else {
+    __pyx_t_6 = PyTuple_New(1+1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 55; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_6);
+    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_8); __Pyx_GIVEREF(__pyx_t_8); __pyx_t_8 = NULL;
+    PyTuple_SET_ITEM(__pyx_t_6, 0+1, __pyx_t_5);
+    __Pyx_GIVEREF(__pyx_t_5);
+    __pyx_t_5 = 0;
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_6, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 55; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cymem/cymem.pyx":52
- *             raise MemoryError("Failed to resize pointer %d to %d bytes" % (<size_t>p, <size_t>n))
+  /* "cymem/cymem.pyx":56
+ *             raise MemoryError(msg)
  *         self.addresses.add(<size_t>new_p)
  *         return new_p             # <<<<<<<<<<<<<<
  * 
@@ -1128,12 +1204,12 @@ static void *__pyx_f_5cymem_5cymem_4Pool_realloc(struct __pyx_obj_5cymem_5cymem_
   __pyx_r = __pyx_v_new_p;
   goto __pyx_L0;
 
-  /* "cymem/cymem.pyx":33
+  /* "cymem/cymem.pyx":34
  *         return p
  * 
- *     cdef void* realloc(self, void* p, size_t n) except NULL:             # <<<<<<<<<<<<<<
- *         """Resizes the memory block pointed to by p to n bytes, returning a
- *         non-NULL pointer to the new block. The contents will be unchanged to the
+ *     cdef void* realloc(self, void* p, size_t new_size) except NULL:             # <<<<<<<<<<<<<<
+ *         """Resizes the memory block pointed to by p to new_size bytes, returning
+ *         a non-NULL pointer to the new block. The contents will be unchanged to
  */
 
   /* function exit code */
@@ -1143,19 +1219,21 @@ static void *__pyx_f_5cymem_5cymem_4Pool_realloc(struct __pyx_obj_5cymem_5cymem_
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8);
   __Pyx_AddTraceback("cymem.cymem.Pool.realloc", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_msg);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "cymem/cymem.pyx":54
+/* "cymem/cymem.pyx":58
  *         return new_p
  * 
  *     cdef void* free(self, void* p) except NULL:             # <<<<<<<<<<<<<<
  *         """Frees the memory block pointed to by p, which must have been returned
- *         by a previous call to Pool.alloc.  You should not normally need to free
+ *         by a previous call to Pool.alloc.  You don't necessarily need to free
  */
 
 static void *__pyx_f_5cymem_5cymem_4Pool_free(struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_self, void *__pyx_v_p) {
@@ -1166,65 +1244,75 @@ static void *__pyx_f_5cymem_5cymem_4Pool_free(struct __pyx_obj_5cymem_5cymem_Poo
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
+  size_t __pyx_t_7;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("free", 0);
 
-  /* "cymem/cymem.pyx":62
+  /* "cymem/cymem.pyx":66
  *         If p is not in Pool.addresses, a KeyError is raised.
  *         """
- *         self.addresses.remove(<size_t>p)             # <<<<<<<<<<<<<<
+ *         self.size -= self.addresses.pop(<size_t>p)             # <<<<<<<<<<<<<<
  *         PyMem_Free(p)
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->addresses, __pyx_n_s_remove); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->size); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->addresses, __pyx_n_s_pop); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = NULL;
-  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_4)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_4);
+  __pyx_t_4 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_p)); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_5)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_5);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
     }
   }
-  if (!__pyx_t_4) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
+  if (!__pyx_t_5) {
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_GOTREF(__pyx_t_2);
   } else {
-    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_5);
-    PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
-    PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_3);
-    __Pyx_GIVEREF(__pyx_t_3);
-    __pyx_t_3 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_6 = PyTuple_New(1+1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_6);
+    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_5); __Pyx_GIVEREF(__pyx_t_5); __pyx_t_5 = NULL;
+    PyTuple_SET_ITEM(__pyx_t_6, 0+1, __pyx_t_4);
+    __Pyx_GIVEREF(__pyx_t_4);
+    __pyx_t_4 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   }
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = PyNumber_InPlaceSubtract(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_7 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_7 == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_v_self->size = __pyx_t_7;
 
-  /* "cymem/cymem.pyx":63
+  /* "cymem/cymem.pyx":67
  *         """
- *         self.addresses.remove(<size_t>p)
+ *         self.size -= self.addresses.pop(<size_t>p)
  *         PyMem_Free(p)             # <<<<<<<<<<<<<<
  * 
  * 
  */
   PyMem_Free(__pyx_v_p);
 
-  /* "cymem/cymem.pyx":54
+  /* "cymem/cymem.pyx":58
  *         return new_p
  * 
  *     cdef void* free(self, void* p) except NULL:             # <<<<<<<<<<<<<<
  *         """Frees the memory block pointed to by p, which must have been returned
- *         by a previous call to Pool.alloc.  You should not normally need to free
+ *         by a previous call to Pool.alloc.  You don't necessarily need to free
  */
 
   /* function exit code */
@@ -1236,6 +1324,7 @@ static void *__pyx_f_5cymem_5cymem_4Pool_free(struct __pyx_obj_5cymem_5cymem_Poo
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
   __Pyx_AddTraceback("cymem.cymem.Pool.free", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -1246,7 +1335,7 @@ static void *__pyx_f_5cymem_5cymem_4Pool_free(struct __pyx_obj_5cymem_5cymem_Poo
 /* "cymem/cymem.pxd":2
  * cdef class Pool:
  *     cdef readonly size_t size             # <<<<<<<<<<<<<<
- *     cdef readonly set addresses
+ *     cdef readonly dict addresses
  * 
  */
 
@@ -1292,7 +1381,7 @@ static PyObject *__pyx_pf_5cymem_5cymem_4Pool_4size___get__(struct __pyx_obj_5cy
 /* "cymem/cymem.pxd":3
  * cdef class Pool:
  *     cdef readonly size_t size
- *     cdef readonly set addresses             # <<<<<<<<<<<<<<
+ *     cdef readonly dict addresses             # <<<<<<<<<<<<<<
  * 
  *     cdef void* alloc(self, size_t number, size_t size) except NULL
  */
@@ -1326,19 +1415,19 @@ static PyObject *__pyx_pf_5cymem_5cymem_4Pool_9addresses___get__(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "cymem/cymem.pyx":67
- * 
- * cdef class Address:
- *     def __cinit__(self, size_t number, size_t size):             # <<<<<<<<<<<<<<
- *         cdef void* addr = PyMem_Malloc(number * size)
- *         memset(addr, 0, number * size)
+/* "cymem/cymem.pyx":82
+ *         addr (size_t): Read-only size_t cast of the pointer.
+ *     """
+ *     def __cinit__(self, size_t number, size_t elem_size):             # <<<<<<<<<<<<<<
+ *         self.ptr = PyMem_Malloc(number * elem_size)
+ *         memset(self.ptr, 0, number * elem_size)
  */
 
 /* Python wrapper */
 static int __pyx_pw_5cymem_5cymem_7Address_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_5cymem_5cymem_7Address_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   size_t __pyx_v_number;
-  size_t __pyx_v_size;
+  size_t __pyx_v_elem_size;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -1346,7 +1435,7 @@ static int __pyx_pw_5cymem_5cymem_7Address_1__cinit__(PyObject *__pyx_v_self, Py
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_number,&__pyx_n_s_size,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_number,&__pyx_n_s_elem_size,0};
     PyObject* values[2] = {0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
@@ -1363,13 +1452,13 @@ static int __pyx_pw_5cymem_5cymem_7Address_1__cinit__(PyObject *__pyx_v_self, Py
         if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_number)) != 0)) kw_args--;
         else goto __pyx_L5_argtuple_error;
         case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_size)) != 0)) kw_args--;
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_elem_size)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -1377,63 +1466,53 @@ static int __pyx_pw_5cymem_5cymem_7Address_1__cinit__(PyObject *__pyx_v_self, Py
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
     }
-    __pyx_v_number = __Pyx_PyInt_As_size_t(values[0]); if (unlikely((__pyx_v_number == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_size = __Pyx_PyInt_As_size_t(values[1]); if (unlikely((__pyx_v_size == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_number = __Pyx_PyInt_As_size_t(values[0]); if (unlikely((__pyx_v_number == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_elem_size = __Pyx_PyInt_As_size_t(values[1]); if (unlikely((__pyx_v_elem_size == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("cymem.cymem.Address.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_5cymem_5cymem_7Address___cinit__(((struct __pyx_obj_5cymem_5cymem_Address *)__pyx_v_self), __pyx_v_number, __pyx_v_size);
+  __pyx_r = __pyx_pf_5cymem_5cymem_7Address___cinit__(((struct __pyx_obj_5cymem_5cymem_Address *)__pyx_v_self), __pyx_v_number, __pyx_v_elem_size);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_5cymem_5cymem_7Address___cinit__(struct __pyx_obj_5cymem_5cymem_Address *__pyx_v_self, size_t __pyx_v_number, size_t __pyx_v_size) {
-  void *__pyx_v_addr;
+static int __pyx_pf_5cymem_5cymem_7Address___cinit__(struct __pyx_obj_5cymem_5cymem_Address *__pyx_v_self, size_t __pyx_v_number, size_t __pyx_v_elem_size) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "cymem/cymem.pyx":68
- * cdef class Address:
- *     def __cinit__(self, size_t number, size_t size):
- *         cdef void* addr = PyMem_Malloc(number * size)             # <<<<<<<<<<<<<<
- *         memset(addr, 0, number * size)
- *         self.addr = <size_t>addr
- */
-  __pyx_v_addr = PyMem_Malloc((__pyx_v_number * __pyx_v_size));
-
-  /* "cymem/cymem.pyx":69
- *     def __cinit__(self, size_t number, size_t size):
- *         cdef void* addr = PyMem_Malloc(number * size)
- *         memset(addr, 0, number * size)             # <<<<<<<<<<<<<<
- *         self.addr = <size_t>addr
+  /* "cymem/cymem.pyx":83
+ *     """
+ *     def __cinit__(self, size_t number, size_t elem_size):
+ *         self.ptr = PyMem_Malloc(number * elem_size)             # <<<<<<<<<<<<<<
+ *         memset(self.ptr, 0, number * elem_size)
  * 
  */
-  memset(__pyx_v_addr, 0, (__pyx_v_number * __pyx_v_size));
+  __pyx_v_self->ptr = PyMem_Malloc((__pyx_v_number * __pyx_v_elem_size));
 
-  /* "cymem/cymem.pyx":70
- *         cdef void* addr = PyMem_Malloc(number * size)
- *         memset(addr, 0, number * size)
- *         self.addr = <size_t>addr             # <<<<<<<<<<<<<<
+  /* "cymem/cymem.pyx":84
+ *     def __cinit__(self, size_t number, size_t elem_size):
+ *         self.ptr = PyMem_Malloc(number * elem_size)
+ *         memset(self.ptr, 0, number * elem_size)             # <<<<<<<<<<<<<<
  * 
- *     def __dealloc__(self):
+ *     property addr:
  */
-  __pyx_v_self->addr = ((size_t)__pyx_v_addr);
+  memset(__pyx_v_self->ptr, 0, (__pyx_v_number * __pyx_v_elem_size));
 
-  /* "cymem/cymem.pyx":67
- * 
- * cdef class Address:
- *     def __cinit__(self, size_t number, size_t size):             # <<<<<<<<<<<<<<
- *         cdef void* addr = PyMem_Malloc(number * size)
- *         memset(addr, 0, number * size)
+  /* "cymem/cymem.pyx":82
+ *         addr (size_t): Read-only size_t cast of the pointer.
+ *     """
+ *     def __cinit__(self, size_t number, size_t elem_size):             # <<<<<<<<<<<<<<
+ *         self.ptr = PyMem_Malloc(number * elem_size)
+ *         memset(self.ptr, 0, number * elem_size)
  */
 
   /* function exit code */
@@ -1442,11 +1521,74 @@ static int __pyx_pf_5cymem_5cymem_7Address___cinit__(struct __pyx_obj_5cymem_5cy
   return __pyx_r;
 }
 
-/* "cymem/cymem.pyx":72
- *         self.addr = <size_t>addr
+/* "cymem/cymem.pyx":87
+ * 
+ *     property addr:
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return <size_t>self.ptr
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_5cymem_5cymem_7Address_4addr_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_5cymem_5cymem_7Address_4addr_1__get__(PyObject *__pyx_v_self) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_5cymem_5cymem_7Address_4addr___get__(((struct __pyx_obj_5cymem_5cymem_Address *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_5cymem_5cymem_7Address_4addr___get__(struct __pyx_obj_5cymem_5cymem_Address *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "cymem/cymem.pyx":88
+ *     property addr:
+ *         def __get__(self):
+ *             return <size_t>self.ptr             # <<<<<<<<<<<<<<
+ * 
+ *     def __dealloc__(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_self->ptr)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "cymem/cymem.pyx":87
+ * 
+ *     property addr:
+ *         def __get__(self):             # <<<<<<<<<<<<<<
+ *             return <size_t>self.ptr
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("cymem.cymem.Address.addr.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "cymem/cymem.pyx":90
+ *             return <size_t>self.ptr
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
- *         PyMem_Free(<void*>self.addr)
+ *         PyMem_Free(self.ptr)
  */
 
 /* Python wrapper */
@@ -1464,18 +1606,18 @@ static void __pyx_pf_5cymem_5cymem_7Address_2__dealloc__(struct __pyx_obj_5cymem
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "cymem/cymem.pyx":73
+  /* "cymem/cymem.pyx":91
  * 
  *     def __dealloc__(self):
- *         PyMem_Free(<void*>self.addr)             # <<<<<<<<<<<<<<
+ *         PyMem_Free(self.ptr)             # <<<<<<<<<<<<<<
  */
-  PyMem_Free(((void *)__pyx_v_self->addr));
+  PyMem_Free(__pyx_v_self->ptr);
 
-  /* "cymem/cymem.pyx":72
- *         self.addr = <size_t>addr
+  /* "cymem/cymem.pyx":90
+ *             return <size_t>self.ptr
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
- *         PyMem_Free(<void*>self.addr)
+ *         PyMem_Free(self.ptr)
  */
 
   /* function exit code */
@@ -1645,8 +1787,17 @@ static void __pyx_tp_dealloc_5cymem_5cymem_Address(PyObject *o) {
   (*Py_TYPE(o)->tp_free)(o);
 }
 
+static PyObject *__pyx_getprop_5cymem_5cymem_7Address_addr(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_5cymem_5cymem_7Address_4addr_1__get__(o);
+}
+
 static PyMethodDef __pyx_methods_5cymem_5cymem_Address[] = {
   {0, 0, 0, 0}
+};
+
+static struct PyGetSetDef __pyx_getsets_5cymem_5cymem_Address[] = {
+  {(char *)"addr", __pyx_getprop_5cymem_5cymem_7Address_addr, 0, 0, 0},
+  {0, 0, 0, 0, 0}
 };
 
 static PyTypeObject __pyx_type_5cymem_5cymem_Address = {
@@ -1674,7 +1825,7 @@ static PyTypeObject __pyx_type_5cymem_5cymem_Address = {
   0, /*tp_setattro*/
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
-  0, /*tp_doc*/
+  "A block of number * size-bytes of 0-initialized memory, tied to a Python\n    ref-counted object. When the object is garbage collected, the memory is freed.\n\n    Args:\n        number (size_t): The number of elements in the memory block.\n        elem_size (size_t): The size of each element.\n\n    Attributes:\n        ptr (void*): Pointer to the memory block.\n        addr (size_t): Read-only size_t cast of the pointer.\n    ", /*tp_doc*/
   0, /*tp_traverse*/
   0, /*tp_clear*/
   0, /*tp_richcompare*/
@@ -1683,7 +1834,7 @@ static PyTypeObject __pyx_type_5cymem_5cymem_Address = {
   0, /*tp_iternext*/
   __pyx_methods_5cymem_5cymem_Address, /*tp_methods*/
   0, /*tp_members*/
-  0, /*tp_getset*/
+  __pyx_getsets_5cymem_5cymem_Address, /*tp_getset*/
   0, /*tp_base*/
   0, /*tp_dict*/
   0, /*tp_descr_get*/
@@ -1732,17 +1883,18 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Failed_to_resize_pointer_d_to_d, __pyx_k_Failed_to_resize_pointer_d_to_d, sizeof(__pyx_k_Failed_to_resize_pointer_d_to_d), 0, 0, 1, 0},
   {&__pyx_n_s_MemoryError, __pyx_k_MemoryError, sizeof(__pyx_k_MemoryError), 0, 0, 1, 1},
   {&__pyx_kp_s_Pointer_d_not_found_in_Pool_s, __pyx_k_Pointer_d_not_found_in_Pool_s, sizeof(__pyx_k_Pointer_d_not_found_in_Pool_s), 0, 0, 1, 0},
-  {&__pyx_kp_s_Realloc_requires_n_0, __pyx_k_Realloc_requires_n_0, sizeof(__pyx_k_Realloc_requires_n_0), 0, 0, 1, 0},
+  {&__pyx_kp_s_Realloc_requires_new_size_0, __pyx_k_Realloc_requires_new_size_0, sizeof(__pyx_k_Realloc_requires_new_size_0), 0, 0, 1, 0},
+  {&__pyx_n_s_add, __pyx_k_add, sizeof(__pyx_k_add), 0, 0, 1, 1},
+  {&__pyx_n_s_elem_size, __pyx_k_elem_size, sizeof(__pyx_k_elem_size), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_number, __pyx_k_number, sizeof(__pyx_k_number), 0, 0, 1, 1},
+  {&__pyx_n_s_pop, __pyx_k_pop, sizeof(__pyx_k_pop), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
-  {&__pyx_n_s_remove, __pyx_k_remove, sizeof(__pyx_k_remove), 0, 0, 1, 1},
-  {&__pyx_n_s_size, __pyx_k_size, sizeof(__pyx_k_size), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -1752,14 +1904,14 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "cymem/cymem.pyx":46
+  /* "cymem/cymem.pyx":47
  *             raise MemoryError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
- *         if n == 0:
- *             raise MemoryError("Realloc requires n > 0")             # <<<<<<<<<<<<<<
- *         self.addresses.remove(addr)
- *         cdef void* new_p = PyMem_Realloc(p, n)
+ *         if new_size == 0:
+ *             raise MemoryError("Realloc requires new_size > 0")             # <<<<<<<<<<<<<<
+ * 
+ *         # Remove the old address, and subtract its size from our total.
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_Realloc_requires_n_0); if (unlikely(!__pyx_tuple_)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 46; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_Realloc_requires_new_size_0); if (unlikely(!__pyx_tuple_)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
   __Pyx_RefNannyFinishContext();
@@ -1865,9 +2017,9 @@ PyMODINIT_FUNC PyInit_cymem(void)
   if (__Pyx_SetVtable(__pyx_type_5cymem_5cymem_Pool.tp_dict, __pyx_vtabptr_5cymem_5cymem_Pool) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (PyObject_SetAttrString(__pyx_m, "Pool", (PyObject *)&__pyx_type_5cymem_5cymem_Pool) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_5cymem_5cymem_Pool = &__pyx_type_5cymem_5cymem_Pool;
-  if (PyType_Ready(&__pyx_type_5cymem_5cymem_Address) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_5cymem_5cymem_Address) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 70; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_5cymem_5cymem_Address.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "Address", (PyObject *)&__pyx_type_5cymem_5cymem_Address) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "Address", (PyObject *)&__pyx_type_5cymem_5cymem_Address) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 70; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_5cymem_5cymem_Address = &__pyx_type_5cymem_5cymem_Address;
   /*--- Type import code ---*/
   /*--- Variable import code ---*/
@@ -2001,6 +2153,320 @@ invalid_keyword:
     return 0;
 }
 
+static CYTHON_INLINE int __Pyx_IterFinish(void) {
+#if CYTHON_COMPILING_IN_CPYTHON
+    PyThreadState *tstate = PyThreadState_GET();
+    PyObject* exc_type = tstate->curexc_type;
+    if (unlikely(exc_type)) {
+        if (likely(exc_type == PyExc_StopIteration) || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration)) {
+            PyObject *exc_value, *exc_tb;
+            exc_value = tstate->curexc_value;
+            exc_tb = tstate->curexc_traceback;
+            tstate->curexc_type = 0;
+            tstate->curexc_value = 0;
+            tstate->curexc_traceback = 0;
+            Py_DECREF(exc_type);
+            Py_XDECREF(exc_value);
+            Py_XDECREF(exc_tb);
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+    return 0;
+#else
+    if (unlikely(PyErr_Occurred())) {
+        if (likely(PyErr_ExceptionMatches(PyExc_StopIteration))) {
+            PyErr_Clear();
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+    return 0;
+#endif
+}
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    PyObject *result;
+    ternaryfunc call = func->ob_type->tp_call;
+    if (unlikely(!call))
+        return PyObject_Call(func, arg, kw);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = (*call)(func, arg, kw);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
+    PyObject *self, *result;
+    PyCFunction cfunc;
+    cfunc = PyCFunction_GET_FUNCTION(func);
+    self = PyCFunction_GET_SELF(func);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = cfunc(self, arg);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
+#ifdef __Pyx_CyFunction_USED
+    if (likely(PyCFunction_Check(func) || PyObject_TypeCheck(func, __pyx_CyFunctionType))) {
+#else
+    if (likely(PyCFunction_Check(func))) {
+#endif
+        if (likely(PyCFunction_GET_FLAGS(func) & METH_NOARGS)) {
+            return __Pyx_PyObject_CallMethO(func, NULL);
+        }
+    }
+    return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
+}
+#endif
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static PyObject* __Pyx__PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+    PyObject *result;
+    PyObject *args = PyTuple_New(1);
+    if (unlikely(!args)) return NULL;
+    Py_INCREF(arg);
+    PyTuple_SET_ITEM(args, 0, arg);
+    result = __Pyx_PyObject_Call(func, args, NULL);
+    Py_DECREF(args);
+    return result;
+}
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+#ifdef __Pyx_CyFunction_USED
+    if (likely(PyCFunction_Check(func) || PyObject_TypeCheck(func, __pyx_CyFunctionType))) {
+#else
+    if (likely(PyCFunction_Check(func))) {
+#endif
+        if (likely(PyCFunction_GET_FLAGS(func) & METH_O)) {
+            return __Pyx_PyObject_CallMethO(func, arg);
+        }
+    }
+    return __Pyx__PyObject_CallOneArg(func, arg);
+}
+#else
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+    PyObject* args = PyTuple_Pack(1, arg);
+    return (likely(args)) ? __Pyx_PyObject_Call(func, args, NULL) : NULL;
+}
+#endif
+
+static PyObject* __Pyx_PyObject_CallMethod0(PyObject* obj, PyObject* method_name) {
+    PyObject *method, *result = NULL;
+    method = __Pyx_PyObject_GetAttrStr(obj, method_name);
+    if (unlikely(!method)) goto bad;
+#if CYTHON_COMPILING_IN_CPYTHON
+    if (likely(PyMethod_Check(method))) {
+        PyObject *self = PyMethod_GET_SELF(method);
+        if (likely(self)) {
+            PyObject *function = PyMethod_GET_FUNCTION(method);
+            result = __Pyx_PyObject_CallOneArg(function, self);
+            Py_DECREF(method);
+            return result;
+        }
+    }
+#endif
+    result = __Pyx_PyObject_CallNoArg(method);
+    Py_DECREF(method);
+bad:
+    return result;
+}
+
+static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index) {
+    PyErr_Format(PyExc_ValueError,
+                 "need more than %" CYTHON_FORMAT_SSIZE_T "d value%.1s to unpack",
+                 index, (index == 1) ? "" : "s");
+}
+
+static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
+    PyErr_Format(PyExc_ValueError,
+                 "too many values to unpack (expected %" CYTHON_FORMAT_SSIZE_T "d)", expected);
+}
+
+static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected) {
+    if (unlikely(retval)) {
+        Py_DECREF(retval);
+        __Pyx_RaiseTooManyValuesError(expected);
+        return -1;
+    } else {
+        return __Pyx_IterFinish();
+    }
+    return 0;
+}
+
+static CYTHON_INLINE void __Pyx_RaiseNoneNotIterableError(void) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
+}
+
+static void __Pyx_UnpackTupleError(PyObject *t, Py_ssize_t index) {
+    if (t == Py_None) {
+      __Pyx_RaiseNoneNotIterableError();
+    } else if (PyTuple_GET_SIZE(t) < index) {
+      __Pyx_RaiseNeedMoreValuesError(PyTuple_GET_SIZE(t));
+    } else {
+      __Pyx_RaiseTooManyValuesError(index);
+    }
+}
+
+static CYTHON_INLINE int __Pyx_unpack_tuple2(PyObject* tuple, PyObject** pvalue1, PyObject** pvalue2,
+                                             int is_tuple, int has_known_size, int decref_tuple) {
+    Py_ssize_t index;
+    PyObject *value1 = NULL, *value2 = NULL, *iter = NULL;
+    if (!is_tuple && unlikely(!PyTuple_Check(tuple))) {
+        iternextfunc iternext;
+        iter = PyObject_GetIter(tuple);
+        if (unlikely(!iter)) goto bad;
+        if (decref_tuple) { Py_DECREF(tuple); tuple = NULL; }
+        iternext = Py_TYPE(iter)->tp_iternext;
+        value1 = iternext(iter); if (unlikely(!value1)) { index = 0; goto unpacking_failed; }
+        value2 = iternext(iter); if (unlikely(!value2)) { index = 1; goto unpacking_failed; }
+        if (!has_known_size && unlikely(__Pyx_IternextUnpackEndCheck(iternext(iter), 2))) goto bad;
+        Py_DECREF(iter);
+    } else {
+        if (!has_known_size && unlikely(PyTuple_GET_SIZE(tuple) != 2)) {
+            __Pyx_UnpackTupleError(tuple, 2);
+            goto bad;
+        }
+#if CYTHON_COMPILING_IN_PYPY
+        value1 = PySequence_ITEM(tuple, 0);
+        if (unlikely(!value1)) goto bad;
+        value2 = PySequence_ITEM(tuple, 1);
+        if (unlikely(!value2)) goto bad;
+#else
+        value1 = PyTuple_GET_ITEM(tuple, 0);
+        value2 = PyTuple_GET_ITEM(tuple, 1);
+        Py_INCREF(value1);
+        Py_INCREF(value2);
+#endif
+        if (decref_tuple) { Py_DECREF(tuple); }
+    }
+    *pvalue1 = value1;
+    *pvalue2 = value2;
+    return 0;
+unpacking_failed:
+    if (!has_known_size && __Pyx_IterFinish() == 0)
+        __Pyx_RaiseNeedMoreValuesError(index);
+bad:
+    Py_XDECREF(iter);
+    Py_XDECREF(value1);
+    Py_XDECREF(value2);
+    if (decref_tuple) { Py_XDECREF(tuple); }
+    return -1;
+}
+
+static CYTHON_INLINE PyObject* __Pyx_dict_iterator(PyObject* iterable, int is_dict, PyObject* method_name,
+                                                   Py_ssize_t* p_orig_length, int* p_source_is_dict) {
+    is_dict = is_dict || likely(PyDict_CheckExact(iterable));
+    *p_source_is_dict = is_dict;
+#if !CYTHON_COMPILING_IN_PYPY
+    if (is_dict) {
+        *p_orig_length = PyDict_Size(iterable);
+        Py_INCREF(iterable);
+        return iterable;
+    }
+#endif
+    *p_orig_length = 0;
+    if (method_name) {
+        PyObject* iter;
+        iterable = __Pyx_PyObject_CallMethod0(iterable, method_name);
+        if (!iterable)
+            return NULL;
+#if !CYTHON_COMPILING_IN_PYPY
+        if (PyTuple_CheckExact(iterable) || PyList_CheckExact(iterable))
+            return iterable;
+#endif
+        iter = PyObject_GetIter(iterable);
+        Py_DECREF(iterable);
+        return iter;
+    }
+    return PyObject_GetIter(iterable);
+}
+static CYTHON_INLINE int __Pyx_dict_iter_next(PyObject* iter_obj, Py_ssize_t orig_length, Py_ssize_t* ppos,
+                                              PyObject** pkey, PyObject** pvalue, PyObject** pitem, int source_is_dict) {
+    PyObject* next_item;
+#if !CYTHON_COMPILING_IN_PYPY
+    if (source_is_dict) {
+        PyObject *key, *value;
+        if (unlikely(orig_length != PyDict_Size(iter_obj))) {
+            PyErr_SetString(PyExc_RuntimeError, "dictionary changed size during iteration");
+            return -1;
+        }
+        if (unlikely(!PyDict_Next(iter_obj, ppos, &key, &value))) {
+            return 0;
+        }
+        if (pitem) {
+            PyObject* tuple = PyTuple_New(2);
+            if (unlikely(!tuple)) {
+                return -1;
+            }
+            Py_INCREF(key);
+            Py_INCREF(value);
+            PyTuple_SET_ITEM(tuple, 0, key);
+            PyTuple_SET_ITEM(tuple, 1, value);
+            *pitem = tuple;
+        } else {
+            if (pkey) {
+                Py_INCREF(key);
+                *pkey = key;
+            }
+            if (pvalue) {
+                Py_INCREF(value);
+                *pvalue = value;
+            }
+        }
+        return 1;
+    } else if (PyTuple_CheckExact(iter_obj)) {
+        Py_ssize_t pos = *ppos;
+        if (unlikely(pos >= PyTuple_GET_SIZE(iter_obj))) return 0;
+        *ppos = pos + 1;
+        next_item = PyTuple_GET_ITEM(iter_obj, pos);
+        Py_INCREF(next_item);
+    } else if (PyList_CheckExact(iter_obj)) {
+        Py_ssize_t pos = *ppos;
+        if (unlikely(pos >= PyList_GET_SIZE(iter_obj))) return 0;
+        *ppos = pos + 1;
+        next_item = PyList_GET_ITEM(iter_obj, pos);
+        Py_INCREF(next_item);
+    } else
+#endif
+    {
+        next_item = PyIter_Next(iter_obj);
+        if (unlikely(!next_item)) {
+            return __Pyx_IterFinish();
+        }
+    }
+    if (pitem) {
+        *pitem = next_item;
+    } else if (pkey && pvalue) {
+        if (__Pyx_unpack_tuple2(next_item, pkey, pvalue, source_is_dict, source_is_dict, 1))
+            return -1;
+    } else if (pkey) {
+        *pkey = next_item;
+    } else {
+        *pvalue = next_item;
+    }
+    return 1;
+}
+
 static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb) {
 #if CYTHON_COMPILING_IN_CPYTHON
     PyObject *tmp_type, *tmp_value, *tmp_tb;
@@ -2058,25 +2524,6 @@ static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
         Py_DECREF(ctx);
     }
 }
-
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
-    PyObject *result;
-    ternaryfunc call = func->ob_type->tp_call;
-    if (unlikely(!call))
-        return PyObject_Call(func, arg, kw);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = (*call)(func, arg, kw);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
-    }
-    return result;
-}
-#endif
 
 #if PY_MAJOR_VERSION < 3
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb,
@@ -2224,55 +2671,6 @@ static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject 
 bad:
     Py_XDECREF(owned_instance);
     return;
-}
-#endif
-
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
-    PyObject *self, *result;
-    PyCFunction cfunc;
-    cfunc = PyCFunction_GET_FUNCTION(func);
-    self = PyCFunction_GET_SELF(func);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = cfunc(self, arg);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
-    }
-    return result;
-}
-#endif
-
-#if CYTHON_COMPILING_IN_CPYTHON
-static PyObject* __Pyx__PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-    PyObject *result;
-    PyObject *args = PyTuple_New(1);
-    if (unlikely(!args)) return NULL;
-    Py_INCREF(arg);
-    PyTuple_SET_ITEM(args, 0, arg);
-    result = __Pyx_PyObject_Call(func, args, NULL);
-    Py_DECREF(args);
-    return result;
-}
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-#ifdef __Pyx_CyFunction_USED
-    if (likely(PyCFunction_Check(func) || PyObject_TypeCheck(func, __pyx_CyFunctionType))) {
-#else
-    if (likely(PyCFunction_Check(func))) {
-#endif
-        if (likely(PyCFunction_GET_FLAGS(func) & METH_O)) {
-            return __Pyx_PyObject_CallMethO(func, arg);
-        }
-    }
-    return __Pyx__PyObject_CallOneArg(func, arg);
-}
-#else
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-    PyObject* args = PyTuple_Pack(1, arg);
-    return (likely(args)) ? __Pyx_PyObject_Call(func, args, NULL) : NULL;
 }
 #endif
 
