@@ -3,22 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to cymem's documentation!
-=================================
 
-Contents:
+.. include:: ../../README.rst
+
+API
+---
 
 .. toctree::
-   :maxdepth: 2
-
-   includeme
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   pool.rst
+   address.rst
 
