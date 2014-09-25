@@ -13,7 +13,7 @@ function:
     >>> data1 = <int*>mem.alloc(10, sizeof(int))
     >>> data2 = <float*>mem.alloc(12, sizeof(float))
 
-The Pool object saves the memory addresses in a vector, and frees them when the
+The Pool object saves the memory addresses internally, and frees them when the
 object is garbage collected. Typically you'll attach the Pool to some cdef'd
 class. This is particularly handy for deeply nested structs, which have
 complicated initialization functions. Just pass the pool object into the
