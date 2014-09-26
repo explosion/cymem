@@ -91,6 +91,9 @@ cdef class Address:
         addr (size_t): Read-only size_t cast of the pointer.
     """
     def __cinit__(self, size_t number, size_t elem_size):
+        self.ptr = NULL
+
+    def __init__(self, size_t number, size_t elem_size):
         self.ptr = PyMem_Malloc(number * elem_size)
         memset(self.ptr, 0, number * elem_size)
 
