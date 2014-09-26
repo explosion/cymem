@@ -60,6 +60,10 @@ can't be a Python class.  We can write this easily enough in Cython:
         cdef SparseMatrix** matrices
 
         def __cinit__(self, list py_matrices):
+            self.length = 0
+            self.matrices = NULL
+
+        def __init__(self, list py_matrices):
             self.length = len(py_matrices)
             self.matrices = <SparseMatrix**>calloc(len(py_matrices), sizeof(SparseMatrix*))
 
@@ -136,6 +140,11 @@ writing these deallocators at all. Instead, you write as follows:
         cdef Pool mem
     
         def __cinit__(self, list py_matrices):
+            self.mem = None
+            self.length = 0
+            self.matrices = NULL
+
+        def __init__(self, list py_matrices):
             self.mem = Pool()
             self.length = len(py_matrices)
             self.matrices = <SparseMatrix**>self.mem.alloc(self.length, sizeof(SparseMatrix*))
@@ -164,4 +173,4 @@ All that the Pool class does is remember the addresses it gives out. When the
 MatrixArray object is garbage-collected, the Pool object will also be garbage
 collected, which triggers a call to Pool.__dealloc__. The Pool then frees all of
 its addresses. This saves you from walking back over your nested data structures
-to free them, eliminating a common class of bugs.
+to free them, eliminating a common class of errors.
