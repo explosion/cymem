@@ -44,8 +44,7 @@ cdef class Pool:
         a non-NULL pointer to the new block. new_size must be larger than the
         original.
         
-        If p is not in the Pool or new_size is 0, a MemoryError is raised. If p
-        is not found in the Pool, a KeyError is raised.
+        If p is not in the Pool or new_size is 0, a MemoryError is raised.
         """
         if <size_t>p not in self.addresses:
             raise MemoryError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
