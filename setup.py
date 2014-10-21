@@ -16,7 +16,7 @@ setup(
     ext_modules=cythonize(exts),
     name="cymem",
     packages=["cymem"],
-    version="0.9",
+    version="1.0",
     author="Matthew Honnibal",
     author_email="honnibal@gmail.com",
     url="http://github.com/syllog1sm/cymem",
