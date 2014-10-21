@@ -2,6 +2,7 @@
 
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 from libc.string cimport memset
+from libc.string cimport memcpy
 
 
 cdef class Pool:
@@ -40,29 +41,23 @@ cdef class Pool:
 
     cdef void* realloc(self, void* p, size_t new_size) except NULL:
         """Resizes the memory block pointed to by p to new_size bytes, returning
-        a non-NULL pointer to the new block. The contents will be unchanged to
-        the minimum of the old and the new sizes.
+        a non-NULL pointer to the new block. new_size must be larger than the
+        original.
         
         If p is not in the Pool or new_size is 0, a MemoryError is raised. If p
-        is not found in the Pool, a KeyError is raised. If the call to PyMem_Realloc
-        fails, a MemoryError is raised.
+        is not found in the Pool, a KeyError is raised.
         """
-        cdef size_t addr
-        if addr not in self.addresses:
+        if <size_t>p not in self.addresses:
             raise MemoryError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
         if new_size == 0:
             raise MemoryError("Realloc requires new_size > 0")
-       
-        # Remove the old address, and subtract its size from our total.
-        self.size -= self.addresses.pop(addr)
-        cdef void* new_p = PyMem_Realloc(p, new_size)
-        if new_p == NULL:
-            msg =  "Failed to resize pointer %d to %d bytes" % (<size_t>p, new_size)
-            raise MemoryError(msg)
-        self.addresses.add(<size_t>new_p)
-        return new_p
+        assert new_size > self.addresses[<size_t>p]         
+        cdef void* new = self.alloc(1, new_size)
+        memcpy(new, p, self.addresses[<size_t>p])
+        self.free(p)
+        return new
 
-    cdef void* free(self, void* p) except NULL:
+    cdef void free(self, void* p) except *:
         """Frees the memory block pointed to by p, which must have been returned
         by a previous call to Pool.alloc.  You don't necessarily need to free
         memory addresses manually --- you can instead let the Pool be garbage
