@@ -1,22 +1,26 @@
 #!/usr/bin/env python
 from distutils.core import setup
-from Cython.Build import cythonize
-from Cython.Distutils import Extension
+
+try:
+    from Cython.Build import cythonize
+    from Cython.Distutils import Extension
+    exts = cythonize([Extension("cymem.cymem", ["cymem/cymem.pyx"])])
+except ImportError:
+    from distutils.extension import Extension
+    exts = [Extension("cymem.cymem", ["cymem/cymem.c"])]
 
 
 import sys
 import os
 from os.path import splitext
 
-from distutils.sysconfig import get_python_inc
-
-exts = [Extension("cymem.cymem", ["cymem/cymem.pyx"])]
 
 setup(
-    ext_modules=cythonize(exts),
+    ext_modules=exts,
+
     name="cymem",
     packages=["cymem"],
-    version="1.0",
+    version="1.10",
     author="Matthew Honnibal",
     author_email="honnibal@gmail.com",
     url="http://github.com/syllog1sm/cymem",
