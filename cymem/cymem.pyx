@@ -55,6 +55,7 @@ cdef class Pool:
         memcpy(new, p, self.addresses[<size_t>p])
         self.free(p)
         self.addresses[<size_t>new] = new_size
+        self.size += new_size
         return new
 
     cdef void free(self, void* p) except *:
