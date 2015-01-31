@@ -2,7 +2,7 @@
 
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 from libc.string cimport memset
-from libc.string cimport memcpy
+from libc.string cimport memcpy, memmove
 
 
 cdef class Pool:
@@ -20,13 +20,19 @@ cdef class Pool:
         addresses (dict): The currently allocated addresses and their sizes. Read-only.
     """
     def __cinit__(self):
-        self.size = 0
-        self.addresses = {}
+        self._resize_at = 8
+        self._length = 0
+        self._addresses = <_Memory*>PyMem_Malloc(self._resize_at * sizeof(_Memory))
+        for i in range(self._resize_at):
+            self._addresses[i].ptr = NULL
+            self._addresses[i].size = 0
 
     def __dealloc__(self):
-        cdef size_t addr
-        for addr in self.addresses:
-            PyMem_Free(<void*>addr)
+        if self._addresses is not NULL:
+            for i in range(self._length):
+                if self._addresses[i].ptr is not NULL:
+                    PyMem_Free(self._addresses[i].ptr)
+            PyMem_Free(self._addresses)
 
     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:
         """Allocate a 0-initialized number*elem_size-byte block of memory, and
@@ -34,9 +40,20 @@ cdef class Pool:
         collected.
         """
         cdef void* p = PyMem_Malloc(number * elem_size)
+        assert p is not NULL
         memset(p, 0, number * elem_size)
-        self.addresses[<size_t>p] = number * elem_size
-        self.size += number * elem_size
+        cdef int i, index
+        for i in range(self._length):
+            if self._addresses[i].ptr == NULL:
+                index = i
+                break
+        else:
+            index = self._length
+            self._length += 1
+        self._addresses[index].ptr = p
+        self._addresses[index].size = number * elem_size
+        if self._length == self._resize_at:
+            self._resize()
         return p
 
     cdef void* realloc(self, void* p, size_t new_size) except NULL:
@@ -46,16 +63,21 @@ cdef class Pool:
         
         If p is not in the Pool or new_size is 0, a MemoryError is raised.
         """
-        if <size_t>p not in self.addresses:
-            raise MemoryError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
         if new_size == 0:
             raise MemoryError("Realloc requires new_size > 0")
-        assert new_size > self.addresses[<size_t>p]         
         cdef void* new = self.alloc(1, new_size)
-        memcpy(new, p, self.addresses[<size_t>p])
-        self.free(p)
-        self.addresses[<size_t>new] = new_size
-        self.size += new_size
+        cdef int i
+        cdef size_t size
+        for i in range(self._length):
+            if self._addresses[i].ptr == p:
+                size = self._addresses[i].size
+                self._addresses[i].ptr = NULL
+                self._addresses[i].size = 0
+                break
+        else:
+            raise MemoryError("Pointer %d not found in Pool" % <size_t>p)
+        memcpy(new, p, size)
+        PyMem_Free(p)
         return new
 
     cdef void free(self, void* p) except *:
@@ -66,8 +88,26 @@ cdef class Pool:
         
         If p is not in Pool.addresses, a KeyError is raised.
         """
-        self.size -= self.addresses.pop(<size_t>p)
+        for i in range(self._length):
+            if self._addresses[i].ptr == p:
+                self._addresses[i].ptr = NULL
+                self._addresses[i].size = 0
+                break
+        else:
+            raise KeyError(<size_t>p)
         PyMem_Free(p)
+
+    cdef int _resize(self) except -1:
+        self._resize_at *= 2
+        new_addresses = <_Memory*>PyMem_Malloc(self._resize_at * sizeof(_Memory))
+        for i in range(self._length):
+            new_addresses[i].ptr = self._addresses[i].ptr
+            new_addresses[i].size = self._addresses[i].size
+        PyMem_Free(self._addresses)
+        self._addresses = new_addresses
+        for i in range(self._length, self._resize_at):
+            self._addresses[i].ptr = NULL
+            self._addresses[i].size = 0
 
 
 cdef class Address:
