@@ -25,8 +25,9 @@ cdef class Pool:
 
     def __dealloc__(self):
         cdef size_t addr
-        for addr in self.addresses:
-            PyMem_Free(<void*>addr)
+        if self.addresses is not None:
+            for addr in self.addresses:
+                PyMem_Free(<void*>addr)
 
     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:
         """Allocate a 0-initialized number*elem_size-byte block of memory, and
