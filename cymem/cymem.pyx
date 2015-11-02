@@ -38,7 +38,7 @@ cdef class Pool:
         """
         cdef void* p = PyMem_Malloc(number * elem_size)
         if p == NULL:
-            raise MemoryError("Error assigning %d bytes" % number * elem_size)
+            raise MemoryError("Error assigning %d bytes" % (number * elem_size))
         memset(p, 0, number * elem_size)
         self.addresses[<size_t>p] = number * elem_size
         self.size += number * elem_size
@@ -62,7 +62,6 @@ cdef class Pool:
         memcpy(new_ptr, p, self.addresses[<size_t>p])
         self.free(p)
         self.addresses[<size_t>new_ptr] = new_size
-        self.size += new_size
         return new_ptr
 
     cdef void free(self, void* p) except *:
@@ -73,7 +72,9 @@ cdef class Pool:
         
         If p is not in Pool.addresses, a KeyError is raised.
         """
+        assert self
         self.size -= self.addresses.pop(<size_t>p)
+        assert p
         PyMem_Free(p)
 
     def own_pyref(self, object py_ref):
@@ -107,6 +108,7 @@ cdef class Address:
 
     property addr:
         def __get__(self):
+            assert self
             return <size_t>self.ptr
 
     def __dealloc__(self):
