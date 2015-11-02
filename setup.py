@@ -3,6 +3,7 @@
 import shutil
 import sys
 import os
+from os import path
 
 from setuptools import setup
 from setuptools import Extension
@@ -13,10 +14,16 @@ from distutils.command.build_ext import build_ext
 
 # By subclassing build_extensions we have the actual compiler that will be used which is really known only after finalize_options
 # http://stackoverflow.com/questions/724664/python-distutils-how-to-get-a-compiler-that-is-going-to-be-used
-compile_options =  {'msvc'  : ['/Zi','/Od']  ,
+compile_options =  {'msvc'  : ['/Ox']  ,
                     'other' : ['-O3', '-Wno-strict-prototypes', '-Wno-unused-function']       }
-link_options    =  {'msvc'  : ['/DEBUG'] ,
+link_options    =  {'msvc'  : [] ,
                     'other' : [] }
+# Using 
+#     compile_options 'msvc'  : ['/Zi','/Od']  
+#     link_options    'msvc'  : ['/DEBUG']
+# will provide for PDB fie that can be used in Visual Studio for mixed-mode (native code/Python) debugging
+
+
 class build_ext_options:
     def build_options(self):
         c_type = None
@@ -76,8 +83,6 @@ def cython_setup(mod_names, language, includes):
             build_ext_options.build_options(self)
             Cython.Distutils.build_ext.build_extensions(self)
 
-    if language == 'cpp':
-        language = 'c++'
     exts = []
     for mod_name in mod_names:
         mod_path = mod_name.replace('.', '/') + '.pyx'
@@ -86,7 +91,7 @@ def cython_setup(mod_names, language, includes):
     distutils.core.setup(
         name="cymem",
         packages=["cymem"],
-        version="1.12",
+        version=VERSION,
         author="Matthew Honnibal",
         author_email="honnibal@gmail.com",
         url="http://github.com/syllog1sm/cymem",
@@ -102,7 +107,7 @@ def run_setup(exts):
         ext_modules=exts,
         name="cymem",
         packages=["cymem"],
-        version="1.3.0",
+        version=VERSION,
         author="Matthew Honnibal",
         author_email="honnibal@gmail.com",
         url="http://github.com/syllog1sm/cymem",
@@ -128,6 +133,7 @@ def main(modules, is_pypy):
         run_setup(exts)
 
 MOD_NAMES = ['cymem.cymem']
+VERSION = '1.3.1'
 
 if __name__ == '__main__':
     use_cython = sys.argv[1] == 'build_ext'
