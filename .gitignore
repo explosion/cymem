@@ -7,3 +7,5 @@ cymem.c
 MANIFEST
 build/
 dist/
+*.pdb
+*.bat

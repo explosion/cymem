@@ -73,7 +73,9 @@ cdef class Pool:
         
         If p is not in Pool.addresses, a KeyError is raised.
         """
+        assert self
         self.size -= self.addresses.pop(<size_t>p)
+        assert p
         PyMem_Free(p)
 
     def own_pyref(self, object py_ref):
@@ -107,6 +109,7 @@ cdef class Address:
 
     property addr:
         def __get__(self):
+            assert self
             return <size_t>self.ptr
 
     def __dealloc__(self):
