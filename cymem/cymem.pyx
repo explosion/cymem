@@ -25,21 +25,19 @@ cdef class Pool:
 
     def __dealloc__(self):
         cdef size_t addr
-        assert self
         if self.addresses is not None:
             for addr in self.addresses:
-                assert addr 
                 PyMem_Free(<void*>addr)
-#        _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF )
 
     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:
         """Allocate a 0-initialized number*elem_size-byte block of memory, and
         remember its address. The block will be freed when the Pool is garbage
         collected.
         """
-        assert self
         cdef void* p = PyMem_Malloc(number * elem_size)
-        assert p
+        if p == NULL:
+            raise MemoryError("Failed to allocate %d bytes in Pool %s" % (number * elem_size, self.addresses))
+
         memset(p, 0, number * elem_size)
         self.addresses[<size_t>p] = number * elem_size
         self.size += number * elem_size
@@ -52,15 +50,12 @@ cdef class Pool:
         
         If p is not in the Pool or new_size is 0, a MemoryError is raised.
         """
-        assert self
         if <size_t>p not in self.addresses:
             raise MemoryError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
         if new_size == 0:
             raise MemoryError("Realloc requires new_size > 0")
         assert new_size > self.addresses[<size_t>p]         
         cdef void* new = self.alloc(1, new_size)
-        assert p
-        assert new
         memcpy(new, p, self.addresses[<size_t>p])
         self.free(p)
         self.addresses[<size_t>new] = new_size

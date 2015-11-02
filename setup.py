@@ -15,9 +15,9 @@ from distutils.command.build_ext import build_ext
 
 # By subclassing build_extensions we have the actual compiler that will be used which is really known only after finalize_options
 # http://stackoverflow.com/questions/724664/python-distutils-how-to-get-a-compiler-that-is-going-to-be-used
-compile_options =  {'msvc'  : ['/EHsc']  ,
+compile_options =  {'msvc'  : ['/Zi','/Od']  ,
                     'other' : ['-O3', '-Wno-strict-prototypes', '-Wno-unused-function']       }
-link_options    =  {'msvc'  : [] ,
+link_options    =  {'msvc'  : ['/DEBUG'] ,
                     'other' : [] }
 class build_ext_options:
     def build_options(self):
