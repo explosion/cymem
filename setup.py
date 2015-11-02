@@ -20,7 +20,7 @@ setup(
 
     name="cymem",
     packages=["cymem"],
-    version="1.3.0",
+    version="1.30",
     author="Matthew Honnibal",
     author_email="honnibal@gmail.com",
     url="http://github.com/syllog1sm/cymem",
