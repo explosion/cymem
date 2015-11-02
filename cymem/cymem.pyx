@@ -1,6 +1,7 @@
 # cython: embedsignature=True
 
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
+from cpython.ref cimport Py_INCREF, Py_DECREF
 from libc.string cimport memset
 from libc.string cimport memcpy
 
@@ -22,11 +23,12 @@ cdef class Pool:
     def __cinit__(self):
         self.size = 0
         self.addresses = {}
+        self.refs = []
 
     def __dealloc__(self):
         cdef size_t addr
-        if self.addresses is not None:
-            for addr in self.addresses:
+        for addr in self.addresses:
+            if addr != 0:
                 PyMem_Free(<void*>addr)
 
     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:
@@ -36,8 +38,7 @@ cdef class Pool:
         """
         cdef void* p = PyMem_Malloc(number * elem_size)
         if p == NULL:
-            raise MemoryError("Failed to allocate %d bytes in Pool %s" % (number * elem_size, self.addresses))
-
+            raise MemoryError("Error assigning %d bytes" % number * elem_size)
         memset(p, 0, number * elem_size)
         self.addresses[<size_t>p] = number * elem_size
         self.size += number * elem_size
@@ -51,16 +52,18 @@ cdef class Pool:
         If p is not in the Pool or new_size is 0, a MemoryError is raised.
         """
         if <size_t>p not in self.addresses:
-            raise MemoryError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
+            raise ValueError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
         if new_size == 0:
-            raise MemoryError("Realloc requires new_size > 0")
+            raise ValueError("Realloc requires new_size > 0")
         assert new_size > self.addresses[<size_t>p]         
-        cdef void* new = self.alloc(1, new_size)
-        memcpy(new, p, self.addresses[<size_t>p])
+        cdef void* new_ptr = self.alloc(1, new_size)
+        if new_ptr == NULL:
+            raise MemoryError("Error reallocating to %d bytes" % new_size)
+        memcpy(new_ptr, p, self.addresses[<size_t>p])
         self.free(p)
-        self.addresses[<size_t>new] = new_size
-#        self.size += new_size
-        return new
+        self.addresses[<size_t>new_ptr] = new_size
+        self.size += new_size
+        return new_ptr
 
     cdef void free(self, void* p) except *:
         """Frees the memory block pointed to by p, which must have been returned
@@ -74,6 +77,9 @@ cdef class Pool:
         self.size -= self.addresses.pop(<size_t>p)
         assert p
         PyMem_Free(p)
+
+    def own_pyref(self, object py_ref):
+        self.refs.append(py_ref)
 
 
 cdef class Address:
@@ -97,7 +103,8 @@ cdef class Address:
 
     def __init__(self, size_t number, size_t elem_size):
         self.ptr = PyMem_Malloc(number * elem_size)
-        assert self.ptr
+        if self.ptr == NULL:
+            raise MemoryError("Error assigning %d bytes" % number * elem_size)
         memset(self.ptr, 0, number * elem_size)
 
     property addr:
@@ -106,6 +113,5 @@ cdef class Address:
             return <size_t>self.ptr
 
     def __dealloc__(self):
-        assert self
-        assert self.ptr  
-        PyMem_Free(self.ptr)
+        if self.ptr != NULL:
+            PyMem_Free(self.ptr)
