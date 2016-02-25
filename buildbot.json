@@ -1,0 +1,21 @@
+{
+    "build": {
+        "sdist": [
+            "pip install -r requirements.txt",
+            "python setup.py sdist"
+        ],
+        "install": [
+            "pip install -v source.tar.gz"
+        ],
+        "wheel": [
+            "python untar.py source.tar.gz src",
+            "python src/setup.py bdist_wheel",
+            "python cpdist.py src/dist"
+        ]
+    },
+    "test": {
+        "after": ["install", "wheel"],
+        "package": "cymem",
+        "args": "--tb=native"
+    }
+}
