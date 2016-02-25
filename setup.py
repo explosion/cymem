@@ -19,7 +19,7 @@ setup(
     ext_modules=exts,
 
     name="cymem",
-    packages=["cymem"],
+    packages=["cymem", "cymem.tests"],
     version="1.31.0",
     author="Matthew Honnibal",
     author_email="honnibal@gmail.com",
