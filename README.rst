@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/spacy-io/cymem.svg?branch=master
+    :target: https://travis-ci.org/spacy-io/cymem
+
 Cython Memory Helper
 --------------------
 
