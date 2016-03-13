@@ -3,10 +3,10 @@
 # https://python-packaging-user-guide.readthedocs.org/en/latest/single_source_version/
 # https://github.com/pypa/warehouse/blob/master/warehouse/__about__.py
 
-__name__ = 'cymem'
+__title__ = 'cymem'
 __version__ = '1.31.0'
 __summary__ = 'Manage calls to calloc/free through Cython'
-__uri__ = 'http://github.com/syllog1sm/cymem'
+__uri__ = 'https://github.com/spacy-io/cymem'
 __author__ = 'Matthew Honnibal'
 __email__ = 'matt@spacy.io'
 __license__ = 'MIT'

@@ -85,9 +85,12 @@ def setup_package():
         return clean(root)
 
     with chdir(root):
-        about = {}
         with open(os.path.join(root, 'cymem', 'about.py')) as f:
+            about = {}
             exec(f.read(), about)
+
+        with open(os.path.join(root, 'README.rst')) as f:
+            readme = f.read()
 
         include_dirs = [
             get_python_inc(plat_specific=True)]
@@ -103,21 +106,33 @@ def setup_package():
             generate_cython(root, 'cymem')
 
         setup(
-            name=about['__name__'],
+            name=about['__title__'],
+            zip_safe=True,
             packages=PACKAGES,
             package_data={'': ['*.pyx', '*.pxd']},
             description=about['__summary__'],
+            long_description=readme,
             author=about['__author__'],
             author_email=about['__email__'],
             version=about['__version__'],
             url=about['__uri__'],
             license=about['__license__'],
             ext_modules=ext_modules,
-            classifiers=['Environment :: Console',
-                         'Operating System :: OS Independent',
-                         'Intended Audience :: Science/Research',
-                         'Programming Language :: Cython',
-                         'Topic :: Scientific/Engineering'],
+            classifiers=[
+                'Environment :: Console',
+                'Intended Audience :: Developers',
+                'Intended Audience :: Science/Research',
+                'License :: OSI Approved :: MIT License',
+                'Operating System :: POSIX :: Linux',
+                'Operating System :: MacOS :: MacOS X',
+                'Operating System :: Microsoft :: Windows',
+                'Programming Language :: Cython',
+                'Programming Language :: Python :: 2.6',
+                'Programming Language :: Python :: 2.7',
+                'Programming Language :: Python :: 3.3',
+                'Programming Language :: Python :: 3.4',
+                'Programming Language :: Python :: 3.5',
+                'Topic :: Scientific/Engineering'],
             cmdclass = {
                 'build_ext': build_ext_subclass},
         )

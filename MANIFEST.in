@@ -1,7 +1,3 @@
-#documentation
-recursive-include docs/_build/html *
-
-#Misc
+include buildbot.json
+include LICENSE
 include README.rst
-include CHANGES.txt
-include LICENSE.txt
