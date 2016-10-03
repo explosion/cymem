@@ -1,45 +1,52 @@
-.. image:: https://travis-ci.org/spacy-io/cymem.svg?branch=master
-    :target: https://travis-ci.org/spacy-io/cymem
-
-Cython Memory Helper
---------------------
+cymem: A Cython Memory Helper
+********************
 
 cymem provides two small memory-management helpers for Cython. They make it
 easy to tie memory to a Python object's life-cycle, so that the memory is freed
 when the object is garbage collected.
 
-The most useful is cymem.Pool, which acts as a thin wrapper around the calloc
+.. image:: https://travis-ci.org/spacy-io/cymem.svg?branch=master
+    :target: https://travis-ci.org/spacy-io/cymem
+    
+Overview
+========
+
+The most useful is ``cymem.Pool``, which acts as a thin wrapper around the calloc
 function:
+
+.. code:: python
 
     >>> from cymem.cymem cimport Pool
     >>> cdef Pool mem = Pool()
     >>> data1 = <int*>mem.alloc(10, sizeof(int))
     >>> data2 = <float*>mem.alloc(12, sizeof(float))
 
-The Pool object saves the memory addresses internally, and frees them when the
-object is garbage collected. Typically you'll attach the Pool to some cdef'd
+The ``Pool`` object saves the memory addresses internally, and frees them when the
+object is garbage collected. Typically you'll attach the ``Pool`` to some cdef'd
 class. This is particularly handy for deeply nested structs, which have
-complicated initialization functions. Just pass the pool object into the
-initializer, and you don't have to worry about freeing your struct at all ---
-all of the calls to Pool.alloc will be automatically freed when the Pool
+complicated initialization functions. Just pass the ``Pool`` object into the
+initializer, and you don't have to worry about freeing your struct at all —
+all of the calls to ``Pool.alloc`` will be automatically freed when the ``Pool``
 expires.
 
 Installation
-------------
+============
 
-Installation is via pip, and requires Cython.
+Installation is via `pip <https://pypi.python.org/pypi/pip>`_, and requires `Cython <http://cython.org/>`_.
+
+.. code:: bash
 
     pip install cymem
 
 Example Use Case: An array of structs
--------------------------------------
+=====================================
 
 Let's say we want a sequence of sparse matrices. We need fast access, and
 a Python list isn't performing well enough. So, we want a C-array or C++
-vector, which means we need the sparse matrix to be a C-level struct --- it
+vector, which means we need the sparse matrix to be a C-level struct — it
 can't be a Python class.  We can write this easily enough in Cython:
 
-.. code-block:: cython
+.. code:: cython
 
     """Example without Cymem
     
@@ -108,13 +115,13 @@ can't be a Python class.  We can write this easily enough in Cython:
 
 We wrap the data structure in a Python ref-counted class at as low a level as
 we can, given our performance constraints.  This allows us to allocate and free
-the memory in the __cinit__ and __dealloc__ Cython special methods.
+the memory in the ``__cinit__`` and ``__dealloc__`` Cython special methods.
 
-However, it's very easy to make mistakes when writing the __dealloc__ and
-sparse_matrix_free functions, leading to memory leaks. cymem prevents you from
+However, it's very easy to make mistakes when writing the ``__dealloc__`` and
+``sparse_matrix_free`` functions, leading to memory leaks. cymem prevents you from
 writing these deallocators at all. Instead, you write as follows:
 
-.. code-block:: cython
+.. code:: cython
 
     """Example with Cymem.
 
@@ -172,8 +179,8 @@ writing these deallocators at all. Instead, you write as follows:
         return sm
 
 
-All that the Pool class does is remember the addresses it gives out. When the
-MatrixArray object is garbage-collected, the Pool object will also be garbage
-collected, which triggers a call to Pool.__dealloc__. The Pool then frees all of
+All that the ``Pool`` class does is remember the addresses it gives out. When the
+``MatrixArray`` object is garbage-collected, the ``Pool`` object will also be garbage
+collected, which triggers a call to ``Pool.__dealloc__``. The ``Pool`` then frees all of
 its addresses. This saves you from walking back over your nested data structures
 to free them, eliminating a common class of errors.
