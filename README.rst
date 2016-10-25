@@ -5,8 +5,8 @@ cymem provides two small memory-management helpers for Cython. They make it
 easy to tie memory to a Python object's life-cycle, so that the memory is freed
 when the object is garbage collected.
 
-.. image:: https://travis-ci.org/spacy-io/cymem.svg?branch=master
-    :target: https://travis-ci.org/spacy-io/cymem
+.. image:: https://travis-ci.org/explosion/cymem.svg?branch=master
+    :target: https://travis-ci.org/explosion/cymem
     
 Overview
 ========
