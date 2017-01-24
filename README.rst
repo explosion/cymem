@@ -7,7 +7,7 @@ when the object is garbage collected.
 
 .. image:: https://travis-ci.org/explosion/cymem.svg?branch=master
     :target: https://travis-ci.org/explosion/cymem
-    
+
 Overview
 ========
 
@@ -49,13 +49,13 @@ can't be a Python class.  We can write this easily enough in Cython:
 .. code:: cython
 
     """Example without Cymem
-    
+
     To use an array of structs, we must carefully walk the data structure when
     we deallocate it.
     """
 
     from libc.stdlib cimport calloc, free
-    
+
     cdef struct SparseRow:
         size_t length
         size_t* indices
@@ -133,7 +133,7 @@ writing these deallocators at all. Instead, you write as follows:
     eliminating a common class of bugs.
     """
     from cymem.cymem cimport Pool
-   
+
     cdef struct SparseRow:
         size_t length
         size_t* indices
@@ -148,7 +148,7 @@ writing these deallocators at all. Instead, you write as follows:
         cdef size_t length
         cdef SparseMatrix** matrices
         cdef Pool mem
-    
+
         def __cinit__(self, list py_matrices):
             self.mem = None
             self.length = 0
@@ -184,3 +184,12 @@ All that the ``Pool`` class does is remember the addresses it gives out. When th
 collected, which triggers a call to ``Pool.__dealloc__``. The ``Pool`` then frees all of
 its addresses. This saves you from walking back over your nested data structures
 to free them, eliminating a common class of errors.
+
+Custom Allocators
+=================
+
+Sometimes external C libraries use private functions to allocate and free objects,
+but we'd still like the laziness of the ``Pool``.
+
+    from cymem.cymem cimport Pool, WrapMalloc, WrapFree
+    cdef Pool mem = Pool(WrapMalloc(priv_malloc), WrapFree(priv_free))
