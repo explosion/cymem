@@ -8,6 +8,10 @@ when the object is garbage collected.
 .. image:: https://travis-ci.org/explosion/cymem.svg?branch=master
     :target: https://travis-ci.org/explosion/cymem
 
+.. image:: https://img.shields.io/pypi/v/cymem.svg   
+    :target: https://pypi.python.org/pypi/cymem
+    :alt: pypi Version
+
 Overview
 ========
 
