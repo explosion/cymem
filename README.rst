@@ -8,8 +8,8 @@ when the object is garbage collected.
 .. image:: https://img.shields.io/travis/explosion/cymem/master.svg?style=flat-square
     :target: https://travis-ci.org/explosion/cymem
     
-.. image:: https://img.shields.io/appveyor/ci/explosion/thinc/master.svg?style=flat-square
-    :target: https://ci.appveyor.com/project/explosion/thinc
+.. image:: https://img.shields.io/appveyor/ci/explosion/cymem/master.svg?style=flat-square
+    :target: https://ci.appveyor.com/project/explosion/cymem
     :alt: Appveyor Build Status
 
 .. image:: https://img.shields.io/pypi/v/cymem.svg?style=flat-square  
