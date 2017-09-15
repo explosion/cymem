@@ -1,1 +1,1 @@
-cython < 0.24
+cython >= 0.24
