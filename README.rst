@@ -5,10 +5,14 @@ cymem provides two small memory-management helpers for Cython. They make it
 easy to tie memory to a Python object's life-cycle, so that the memory is freed
 when the object is garbage collected.
 
-.. image:: https://travis-ci.org/explosion/cymem.svg?branch=master
+.. image:: https://img.shields.io/travis/explosion/cymem/master.svg?style=flat-square
     :target: https://travis-ci.org/explosion/cymem
+    
+.. image:: https://img.shields.io/appveyor/ci/explosion/thinc/master.svg?style=flat-square
+    :target: https://ci.appveyor.com/project/explosion/thinc
+    :alt: Appveyor Build Status
 
-.. image:: https://img.shields.io/pypi/v/cymem.svg   
+.. image:: https://img.shields.io/pypi/v/cymem.svg?style=flat-square  
     :target: https://pypi.python.org/pypi/cymem
     :alt: pypi Version
 
@@ -20,10 +24,10 @@ function:
 
 .. code:: python
 
-    >>> from cymem.cymem cimport Pool
-    >>> cdef Pool mem = Pool()
-    >>> data1 = <int*>mem.alloc(10, sizeof(int))
-    >>> data2 = <float*>mem.alloc(12, sizeof(float))
+    from cymem.cymem cimport Pool
+    cdef Pool mem = Pool()
+    data1 = <int*>mem.alloc(10, sizeof(int))
+    data2 = <float*>mem.alloc(12, sizeof(float))
 
 The ``Pool`` object saves the memory addresses internally, and frees them when the
 object is garbage collected. Typically you'll attach the ``Pool`` to some cdef'd
@@ -194,6 +198,8 @@ Custom Allocators
 
 Sometimes external C libraries use private functions to allocate and free objects,
 but we'd still like the laziness of the ``Pool``.
+
+.. code:: python
 
     from cymem.cymem cimport Pool, WrapMalloc, WrapFree
     cdef Pool mem = Pool(WrapMalloc(priv_malloc), WrapFree(priv_free))
