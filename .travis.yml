@@ -8,9 +8,9 @@ python:
 - '3.6'
 install:
 - pip install -r requirements.txt
+- pip install wheel
 - python setup.py build_ext --inplace
 - python setup.py sdist
-- rm -rf cymem/
 - pip install dist/*
 - pip install pytest-cov
 - pip install coveralls
