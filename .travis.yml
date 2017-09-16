@@ -27,6 +27,7 @@ script:
 - python -m pytest cymem --cov=cymem
 
 after_success: coveralls
+skip_cleanup: true
 
 notifications:
   email: false
