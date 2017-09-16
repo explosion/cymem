@@ -11,7 +11,8 @@ install:
 - pip install wheel
 - python setup.py build_ext --inplace
 - python setup.py sdist
-- pip install dist/*
+- python setup.py bdist_wheel
+- pip install dist/*.tgz
 - pip install pytest-cov
 - pip install coveralls
 script:
@@ -25,7 +26,7 @@ deploy:
   provider: releases
   api_key:
     secure: G6zqPv3ub4C9esTjIbup/r5gg4vbjNFirRefkxhQfTOj3VtBSEL+fdSBkXSgI9HKmH8vpkRfsKXEpOB2pUPYHNL230G8ZULnKABXlUUQhVr5qZKL5tY/+ZHORPKz4rbIkRCD9GFTxebRd4f/iMbhkvfXzg/QsPzpt2oqikz90QE=
-  file: dist/*
+  file: dist/*.whl
   file_glob: true
   on:
     repo: explosion/cymem
