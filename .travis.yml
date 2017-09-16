@@ -18,3 +18,12 @@ notifications:
   email: false
   slack:
     secure: VSqtxg7u4NTZRfoZqjxPRPVS92KTy/mp62egfDZ9ujTP4VPxNe15QZuTB6r/ICPgEYqBtdhLc/aetuBcemt0bHfentV0F7bz7iDY/AFQC1h1i4G0D0wKMufuqOJFw9MOp2tSpuvCVzhCxR+Ymx/F9SaeYBAiwBawce4wu+qu3lA=
+deploy:
+  provider: releases
+  api_key:
+    secure: G6zqPv3ub4C9esTjIbup/r5gg4vbjNFirRefkxhQfTOj3VtBSEL+fdSBkXSgI9HKmH8vpkRfsKXEpOB2pUPYHNL230G8ZULnKABXlUUQhVr5qZKL5tY/+ZHORPKz4rbIkRCD9GFTxebRd4f/iMbhkvfXzg/QsPzpt2oqikz90QE=
+  file: dist/*
+  file_glob: true
+  on:
+    repo: explosion/cymem
+    tags: true
