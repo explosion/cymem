@@ -65,7 +65,7 @@ cdef class Pool:
         """
         cdef void* p = self.pymalloc.malloc(number * elem_size)
         if p == NULL:
-            raise MemoryError("Error assigning %d bytes" % number * elem_size)
+            raise MemoryError("Error assigning %d bytes" % (number * elem_size))
         memset(p, 0, number * elem_size)
         self.addresses[<size_t>p] = number * elem_size
         self.size += number * elem_size
