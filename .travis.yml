@@ -18,7 +18,7 @@ install:
 - pip install -r requirements.txt
 - pip install wheel
 - python setup.py build_ext --inplace
-- python setup.py sdist && pip install dist/*.tgz
+- python setup.py sdist && pip install -e .
 - python setup.py bdist_wheel
 - pip install pytest-cov
 - pip install coveralls
