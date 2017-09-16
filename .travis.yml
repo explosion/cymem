@@ -1,6 +1,14 @@
 os:
 - linux
+
 language: python
+
+cache:
+  apt: true
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/.ccache
+
 python:
 - '2.7'
 - '3.4'
@@ -15,9 +23,12 @@ install:
 - pip install dist/*.tgz
 - pip install pytest-cov
 - pip install coveralls
+
 script:
 - python -m pytest cymem --cov=cymem
+
 after_success: coveralls
+
 notifications:
   email: false
   slack:
