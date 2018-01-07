@@ -1,14 +1,11 @@
 os:
 - linux
-
 language: python
-
 cache:
   apt: true
   directories:
-    - $HOME/.cache/pip
-    - $HOME/.ccache
-
+  - "$HOME/.cache/pip"
+  - "$HOME/.ccache"
 python:
 - '2.7'
 - '3.4'
@@ -22,18 +19,10 @@ install:
 - python setup.py bdist_wheel
 - pip install pytest-cov
 - pip install coveralls
-
 script:
 - python -m pytest cymem --cov=cymem
-
-after_success: coveralls
-skip_cleanup: true
-
-notifications:
-  email: false
-  slack:
-    secure: VSqtxg7u4NTZRfoZqjxPRPVS92KTy/mp62egfDZ9ujTP4VPxNe15QZuTB6r/ICPgEYqBtdhLc/aetuBcemt0bHfentV0F7bz7iDY/AFQC1h1i4G0D0wKMufuqOJFw9MOp2tSpuvCVzhCxR+Ymx/F9SaeYBAiwBawce4wu+qu3lA=
 deploy:
+  skip_cleanup: true
   provider: releases
   api_key:
     secure: G6zqPv3ub4C9esTjIbup/r5gg4vbjNFirRefkxhQfTOj3VtBSEL+fdSBkXSgI9HKmH8vpkRfsKXEpOB2pUPYHNL230G8ZULnKABXlUUQhVr5qZKL5tY/+ZHORPKz4rbIkRCD9GFTxebRd4f/iMbhkvfXzg/QsPzpt2oqikz90QE=
@@ -42,3 +31,11 @@ deploy:
   on:
     repo: explosion/cymem
     tags: true
+  password:
+    secure: EtBEQnMXES0zHnotjaVt4JQrHRYku0YGFDhQi1Kfho/TnmhkaIhjhwFkTZlwHflDHAMQfRj9N3a0Ah6QZHiGLkHmva0Z1eiGAQxPqOzErpg8dz8UtlUYjzj8pyh5g/t7L/UsuEFjnoPpGoKJAZDGk61fPDzePvgB24i0Fu4d4PU=
+
+after_success: coveralls
+notifications:
+  email: false
+  slack:
+    secure: VSqtxg7u4NTZRfoZqjxPRPVS92KTy/mp62egfDZ9ujTP4VPxNe15QZuTB6r/ICPgEYqBtdhLc/aetuBcemt0bHfentV0F7bz7iDY/AFQC1h1i4G0D0wKMufuqOJFw9MOp2tSpuvCVzhCxR+Ymx/F9SaeYBAiwBawce4wu+qu3lA=
