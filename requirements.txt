@@ -1,2 +1,2 @@
-cython >= 0.23
+cython>=0.24,<0.28.0
 pytest
