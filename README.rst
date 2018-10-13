@@ -5,16 +5,24 @@ cymem provides two small memory-management helpers for Cython. They make it
 easy to tie memory to a Python object's life-cycle, so that the memory is freed
 when the object is garbage collected.
 
-.. image:: https://img.shields.io/travis/explosion/cymem/master.svg?style=flat-square
+.. image:: https://img.shields.io/travis/explosion/cymem/master.svg?style=flat-square&logo=travis
     :target: https://travis-ci.org/explosion/cymem
     
-.. image:: https://img.shields.io/appveyor/ci/explosion/cymem/master.svg?style=flat-square
+.. image:: https://img.shields.io/appveyor/ci/explosion/cymem/master.svg?style=flat-square&logo=appveyor
     :target: https://ci.appveyor.com/project/explosion/cymem
     :alt: Appveyor Build Status
 
 .. image:: https://img.shields.io/pypi/v/cymem.svg?style=flat-square  
     :target: https://pypi.python.org/pypi/cymem
     :alt: pypi Version
+    
+.. image:: https://img.shields.io/conda/vn/conda-forge/cymem.svg?style=flat-square
+    :target: https://anaconda.org/conda-forge/cymem
+    :alt: conda Version
+
+.. image:: https://img.shields.io/badge/wheels-%E2%9C%93-4c1.svg?longCache=true&style=flat-square&logo=python&logoColor=white
+    :target: https://github.com/explosion/wheelwright/releases
+    :alt: Python wheels
 
 Overview
 ========
