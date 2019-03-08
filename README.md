@@ -44,7 +44,7 @@ pip install cymem
 Let's say we want a sequence of sparse matrices. We need fast access, and
 a Python list isn't performing well enough. So, we want a C-array or C++
 vector, which means we need the sparse matrix to be a C-level struct — it
-can't be a Python class.  We can write this easily enough in Cython:
+can't be a Python class. We can write this easily enough in Cython:
 
 ```python
 """Example without Cymem
@@ -113,7 +113,7 @@ cdef void* sparse_matrix_free(SparseMatrix* sm) except *:
 ```
 
 We wrap the data structure in a Python ref-counted class at as low a level as
-we can, given our performance constraints.  This allows us to allocate and free
+we can, given our performance constraints. This allows us to allocate and free
 the memory in the `__cinit__` and `__dealloc__` Cython special methods.
 
 However, it's very easy to make mistakes when writing the `__dealloc__` and
