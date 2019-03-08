@@ -62,13 +62,8 @@ jobs:
       python setup.py sdist
     displayName: 'Build sdist'
 
-  - script: pip install dist/*.tar.gz
-    condition: in( variables['Agent.OS'], 'Linux', 'Darwin')
-    displayName: 'Install from sdist (Linux, Mac)'
-
-  - script: pip install dist\*.tar.gz
-    condition: eq( variables['Agent.OS'], 'Windows_NT')
-    displayName: 'Install from sdist (Windows)'
+  - script: pip install ./dist/*.tar.gz
+    displayName: 'Install from sdist'
 
   - script: |
       pip install pytest pytest-cov
