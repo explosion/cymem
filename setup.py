@@ -91,7 +91,7 @@ def setup_package():
             about = {}
             exec(f.read(), about)
 
-        with io.open(os.path.join(root, "README.rst"), encoding="utf8") as f:
+        with io.open(os.path.join(root, "README.md"), encoding="utf8") as f:
             readme = f.read()
 
         include_dirs = [get_python_inc(plat_specific=True)]
@@ -115,6 +115,7 @@ def setup_package():
             package_data={"": ["*.pyx", "*.pxd"]},
             description=about["__summary__"],
             long_description=readme,
+            long_description_content_type="text/markdown",
             author=about["__author__"],
             author_email=about["__email__"],
             version=about["__version__"],
