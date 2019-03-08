@@ -1,5 +1,8 @@
 trigger:
   batch: true
+  branches:
+    include:
+    - '*'
 
 jobs:
 
@@ -68,6 +71,5 @@ jobs:
     displayName: 'Install with pip (Windows)'
 
   - script: |
-      pip install pytest pytest-cov
-      python -m pytest cymem --cov=cymem
+      python -m pytest cymem
     displayName: 'Run tests'
