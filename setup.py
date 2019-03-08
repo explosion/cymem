@@ -15,28 +15,29 @@ except ImportError:
     from distutils.core import Extension, setup
 
 
-PACKAGES = [
-    'cymem',
-    'cymem.tests']
-MOD_NAMES = [
-    'cymem.cymem']
+PACKAGES = ["cymem", "cymem.tests"]
+MOD_NAMES = ["cymem.cymem"]
 
 
 # By subclassing build_extensions we have the actual compiler that will be used which is really known only after finalize_options
 # http://stackoverflow.com/questions/724664/python-distutils-how-to-get-a-compiler-that-is-going-to-be-used
-compile_options =  {'msvc'  : ['/Ox', '/EHsc'],
-                    'other' : ['-O3', '-Wno-strict-prototypes', '-Wno-unused-function']}
-link_options    =  {'msvc'  : [],
-                    'other' : []}
+compile_options = {
+    "msvc": ["/Ox", "/EHsc"],
+    "other": ["-O3", "-Wno-strict-prototypes", "-Wno-unused-function"],
+}
+link_options = {"msvc": [], "other": []}
+
 
 class build_ext_options:
     def build_options(self):
         for e in self.extensions:
             e.extra_compile_args = compile_options.get(
-                self.compiler.compiler_type, compile_options['other'])
+                self.compiler.compiler_type, compile_options["other"]
+            )
         for e in self.extensions:
             e.extra_link_args = link_options.get(
-                self.compiler.compiler_type, link_options['other'])
+                self.compiler.compiler_type, link_options["other"]
+            )
 
 
 class build_ext_subclass(build_ext, build_ext_options):
@@ -46,22 +47,22 @@ class build_ext_subclass(build_ext, build_ext_options):
 
 
 def generate_cython(root, source):
-    print('Cythonizing sources')
-    p = subprocess.call([sys.executable,
-                         os.path.join(root, 'bin', 'cythonize.py'),
-                         source])
+    print("Cythonizing sources")
+    p = subprocess.call(
+        [sys.executable, os.path.join(root, "bin", "cythonize.py"), source]
+    )
     if p != 0:
-        raise RuntimeError('Running cythonize failed')
+        raise RuntimeError("Running cythonize failed")
 
 
 def is_source_release(path):
-    return os.path.exists(os.path.join(path, 'PKG-INFO'))
+    return os.path.exists(os.path.join(path, "PKG-INFO"))
 
 
 def clean(path):
     for name in MOD_NAMES:
-        name = name.replace('.', '/')
-        for ext in ['.so', '.html', '.cpp', '.c']:
+        name = name.replace(".", "/")
+        for ext in [".so", ".html", ".cpp", ".c"]:
             file_path = os.path.join(path, name + ext)
             if os.path.exists(file_path):
                 os.unlink(file_path)
@@ -82,65 +83,66 @@ def chdir(new_dir):
 def setup_package():
     root = os.path.abspath(os.path.dirname(__file__))
 
-    if len(sys.argv) > 1 and sys.argv[1] == 'clean':
+    if len(sys.argv) > 1 and sys.argv[1] == "clean":
         return clean(root)
 
     with chdir(root):
-        with io.open(os.path.join(root, 'cymem', 'about.py'), encoding='utf8') as f:
+        with io.open(os.path.join(root, "cymem", "about.py"), encoding="utf8") as f:
             about = {}
             exec(f.read(), about)
 
-        with io.open(os.path.join(root, 'README.rst'), encoding='utf8') as f:
+        with io.open(os.path.join(root, "README.rst"), encoding="utf8") as f:
             readme = f.read()
 
-        include_dirs = [
-            get_python_inc(plat_specific=True)]
+        include_dirs = [get_python_inc(plat_specific=True)]
 
         ext_modules = []
         for mod_name in MOD_NAMES:
-            mod_path = mod_name.replace('.', '/') + '.cpp'
+            mod_path = mod_name.replace(".", "/") + ".cpp"
             ext_modules.append(
-                Extension(mod_name, [mod_path],
-                    language='c++', include_dirs=include_dirs))
+                Extension(
+                    mod_name, [mod_path], language="c++", include_dirs=include_dirs
+                )
+            )
 
         if not is_source_release(root):
-            generate_cython(root, 'cymem')
+            generate_cython(root, "cymem")
 
         setup(
-            name=about['__title__'],
+            name=about["__title__"],
             zip_safe=False,
             packages=PACKAGES,
-            package_data={'': ['*.pyx', '*.pxd']},
-            description=about['__summary__'],
+            package_data={"": ["*.pyx", "*.pxd"]},
+            description=about["__summary__"],
             long_description=readme,
-            author=about['__author__'],
-            author_email=about['__email__'],
-            version=about['__version__'],
-            url=about['__uri__'],
-            license=about['__license__'],
+            author=about["__author__"],
+            author_email=about["__email__"],
+            version=about["__version__"],
+            url=about["__uri__"],
+            license=about["__license__"],
             ext_modules=ext_modules,
-            setup_requires=['wheel>=0.32.0,<0.33.0'],
+            setup_requires=["wheel>=0.32.0,<0.33.0"],
             classifiers=[
-                'Environment :: Console',
-                'Intended Audience :: Developers',
-                'Intended Audience :: Science/Research',
-                'License :: OSI Approved :: MIT License',
-                'Operating System :: POSIX :: Linux',
-                'Operating System :: MacOS :: MacOS X',
-                'Operating System :: Microsoft :: Windows',
-                'Programming Language :: Cython',
-                'Programming Language :: Python :: 2.6',
-                'Programming Language :: Python :: 2.7',
-                'Programming Language :: Python :: 3.3',
-                'Programming Language :: Python :: 3.4',
-                'Programming Language :: Python :: 3.5',
-                'Programming Language :: Python :: 3.6',
-                'Programming Language :: Python :: 3.7',
-                'Topic :: Scientific/Engineering'],
-            cmdclass = {
-                'build_ext': build_ext_subclass},
+                "Environment :: Console",
+                "Intended Audience :: Developers",
+                "Intended Audience :: Science/Research",
+                "License :: OSI Approved :: MIT License",
+                "Operating System :: POSIX :: Linux",
+                "Operating System :: MacOS :: MacOS X",
+                "Operating System :: Microsoft :: Windows",
+                "Programming Language :: Cython",
+                "Programming Language :: Python :: 2.6",
+                "Programming Language :: Python :: 2.7",
+                "Programming Language :: Python :: 3.3",
+                "Programming Language :: Python :: 3.4",
+                "Programming Language :: Python :: 3.5",
+                "Programming Language :: Python :: 3.6",
+                "Programming Language :: Python :: 3.7",
+                "Topic :: Scientific/Engineering",
+            ],
+            cmdclass={"build_ext": build_ext_subclass},
         )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     setup_package()
