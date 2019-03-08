@@ -69,7 +69,7 @@ jobs:
     condition: in( variables['Agent.OS'], 'Linux', 'Darwin')
     displayName: 'Install from sdist (Linux, Mac)'
 
-    - script: pip install -e .
+  - script: pip install -e .
     condition: eq( variables['Agent.OS'], 'Windows_NT')
     displayName: 'Install with pip (Windows)'
 
