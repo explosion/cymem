@@ -108,7 +108,7 @@ def setup_package():
             generate_cython(root, "cymem")
 
         setup(
-            name=about["__title__"],
+            name="cymem",
             zip_safe=False,
             packages=PACKAGES,
             package_data={"": ["*.pyx", "*.pxd"]},
