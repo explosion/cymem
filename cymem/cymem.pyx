@@ -61,7 +61,7 @@ cdef class Pool:
     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:
         """Allocate a 0-initialized number*elem_size-byte block of memory, and
         remember its address. The block will be freed when the Pool is garbage
-        collected. Return NULL when allocating zero-length size.
+        collected. Raise ValueError when allocating zero-length size.
         """
         if number == 0 or elem_size == 0:
             raise ValueError("Attempt to alloc zero bytes")
