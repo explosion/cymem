@@ -64,7 +64,7 @@ cdef class Pool:
         collected. Return NULL when allocating zero-length size.
         """
         if number == 0 or elem_size == 0:
-            return NULL
+            raise ValueError("Attempt to alloc zero bytes")
         cdef void* p = self.pymalloc.malloc(number * elem_size)
         if p == NULL:
             raise MemoryError("Error assigning %d bytes" % (number * elem_size))
