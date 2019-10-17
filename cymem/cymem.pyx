@@ -61,8 +61,10 @@ cdef class Pool:
     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:
         """Allocate a 0-initialized number*elem_size-byte block of memory, and
         remember its address. The block will be freed when the Pool is garbage
-        collected.
+        collected. Return NULL when allocating zero-length size.
         """
+        if number == 0 or elem_size == 0:
+            return NULL
         cdef void* p = self.pymalloc.malloc(number * elem_size)
         if p == NULL:
             raise MemoryError("Error assigning %d bytes" % (number * elem_size))
