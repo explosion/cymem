@@ -41,13 +41,15 @@ cdef class Pool:
         addresses (dict): The currently allocated addresses and their sizes. Read-only.
         pymalloc (PyMalloc): The allocator to use (default uses PyMem_Malloc).
         pyfree (PyFree): The free to use (default uses PyMem_Free).
+        **cfg: Config parameters such as 'error_alloc_zero' (bool).
     """
 
     def __cinit__(self, PyMalloc pymalloc=Default_Malloc,
-                  PyFree pyfree=Default_Free):
+                  PyFree pyfree=Default_Free, **cfg):
         self.size = 0
         self.addresses = {}
-        self.refs = []
+        self.cfg = dict(cfg)
+        self.cfg.setdefault("error_alloc_zero", False)
         self.pymalloc = pymalloc
         self.pyfree = pyfree
 
@@ -61,9 +63,10 @@ cdef class Pool:
     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:
         """Allocate a 0-initialized number*elem_size-byte block of memory, and
         remember its address. The block will be freed when the Pool is garbage
-        collected. Raise ValueError when allocating zero-length size.
+        collected. Raise ValueError when allocating zero-length size and 
+        error_alloc_zero was set to True in the config parameters.
         """
-        if number == 0 or elem_size == 0:
+        if self.cfg["error_alloc_zero"] and (number == 0 or elem_size == 0):
             raise ValueError("Attempt to alloc zero bytes")
         cdef void* p = self.pymalloc.malloc(number * elem_size)
         if p == NULL:
@@ -103,9 +106,6 @@ cdef class Pool:
         """
         self.size -= self.addresses.pop(<size_t>p)
         self.pyfree.free(p)
-
-    def own_pyref(self, object py_ref):
-        self.refs.append(py_ref)
 
 
 cdef class Address:
