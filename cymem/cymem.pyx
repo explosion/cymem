@@ -4,6 +4,9 @@ from cpython.mem cimport PyMem_Malloc, PyMem_Free
 from cpython.ref cimport Py_INCREF, Py_DECREF
 from libc.string cimport memset
 from libc.string cimport memcpy
+import warnings
+
+WARN_ZERO_ALLOC = False
 
 cdef class PyMalloc:
     cdef void _set(self, malloc_t malloc):
@@ -61,8 +64,11 @@ cdef class Pool:
     cdef void* alloc(self, size_t number, size_t elem_size) except NULL:
         """Allocate a 0-initialized number*elem_size-byte block of memory, and
         remember its address. The block will be freed when the Pool is garbage
-        collected.
+        collected. Throw warning when allocating zero-length size and 
+        WARN_ZERO_ALLOC was set to True.
         """
+        if WARN_ZERO_ALLOC and (number == 0 or elem_size == 0):
+            warnings.warn("Allocating zero bytes")
         cdef void* p = self.pymalloc.malloc(number * elem_size)
         if p == NULL:
             raise MemoryError("Error assigning %d bytes" % (number * elem_size))
