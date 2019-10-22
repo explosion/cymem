@@ -54,6 +54,7 @@ cdef class Pool:
                   PyFree pyfree=Default_Free):
         self.size = 0
         self.addresses = {}
+        self.refs = []
         self.pymalloc = pymalloc
         self.pyfree = pyfree
 
