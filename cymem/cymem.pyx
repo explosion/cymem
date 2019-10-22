@@ -65,7 +65,7 @@ cdef class Pool:
         """Allocate a 0-initialized number*elem_size-byte block of memory, and
         remember its address. The block will be freed when the Pool is garbage
         collected. Throw warning when allocating zero-length size and 
-        _WARN_ZERO_ALLOC was set to True with `set_warn_zero_aloc()`.
+        WARN_ZERO_ALLOC was set to True.
         """
         if WARN_ZERO_ALLOC and (number == 0 or elem_size == 0):
             warnings.warn("Attempt to alloc zero bytes")
