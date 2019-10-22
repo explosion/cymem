@@ -4,6 +4,13 @@ from cpython.mem cimport PyMem_Malloc, PyMem_Free
 from cpython.ref cimport Py_INCREF, Py_DECREF
 from libc.string cimport memset
 from libc.string cimport memcpy
+import warnings
+
+_WARN_ZERO_ALLOC = False
+
+def set_warn_zero_aloc(value):
+    global _WARN_ZERO_ALLOC
+    _WARN_ZERO_ALLOC = value
 
 cdef class PyMalloc:
     cdef void _set(self, malloc_t malloc):
@@ -66,8 +73,8 @@ cdef class Pool:
         collected. Raise ValueError when allocating zero-length size and 
         error_alloc_zero was set to True in the config parameters.
         """
-        if self.cfg["error_alloc_zero"] and (number == 0 or elem_size == 0):
-            raise ValueError("Attempt to alloc zero bytes")
+        if _WARN_ZERO_ALLOC and (number == 0 or elem_size == 0):
+            warnings.warn("Attempt to alloc zero bytes")
         cdef void* p = self.pymalloc.malloc(number * elem_size)
         if p == NULL:
             raise MemoryError("Error assigning %d bytes" % (number * elem_size))
