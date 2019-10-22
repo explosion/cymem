@@ -6,11 +6,7 @@ from libc.string cimport memset
 from libc.string cimport memcpy
 import warnings
 
-_WARN_ZERO_ALLOC = False
-
-def set_warn_zero_aloc(value):
-    global _WARN_ZERO_ALLOC
-    _WARN_ZERO_ALLOC = value
+WARN_ZERO_ALLOC = False
 
 cdef class PyMalloc:
     cdef void _set(self, malloc_t malloc):
@@ -71,7 +67,7 @@ cdef class Pool:
         collected. Throw warning when allocating zero-length size and 
         _WARN_ZERO_ALLOC was set to True with `set_warn_zero_aloc()`.
         """
-        if _WARN_ZERO_ALLOC and (number == 0 or elem_size == 0):
+        if WARN_ZERO_ALLOC and (number == 0 or elem_size == 0):
             warnings.warn("Attempt to alloc zero bytes")
         cdef void* p = self.pymalloc.malloc(number * elem_size)
         if p == NULL:
