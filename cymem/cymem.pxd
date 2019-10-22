@@ -16,7 +16,7 @@ cdef PyFree WrapFree(free_t free)
 cdef class Pool:
     cdef readonly size_t size
     cdef readonly dict addresses
-    cdef readonly dict cfg
+    cdef readonly list refs
     cdef readonly PyMalloc pymalloc
     cdef readonly PyFree pyfree
 
