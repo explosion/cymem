@@ -68,7 +68,7 @@ cdef class Pool:
         WARN_ZERO_ALLOC was set to True.
         """
         if WARN_ZERO_ALLOC and (number == 0 or elem_size == 0):
-            warnings.warn("Attempt to alloc zero bytes")
+            warnings.warn("Allocating zero bytes")
         cdef void* p = self.pymalloc.malloc(number * elem_size)
         if p == NULL:
             raise MemoryError("Error assigning %d bytes" % (number * elem_size))
