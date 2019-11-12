@@ -6,9 +6,9 @@ cymem provides two small memory-management helpers for Cython. They make it
 easy to tie memory to a Python object's life-cycle, so that the memory is freed
 when the object is garbage collected.
 
-[![Azure Pipelines](https://img.shields.io/azure-devops/build/explosion-ai/public/2/master.svg?logo=azure-devops&style=flat-square)](https://dev.azure.com/explosion-ai/public/_build?definitionId=2)
-[![pypi Version](https://img.shields.io/pypi/v/cymem.svg?style=flat-square)](https://pypi.python.org/pypi/cymem)
-[![conda Version](https://img.shields.io/conda/vn/conda-forge/cymem.svg?style=flat-square)](https://anaconda.org/conda-forge/cymem)
+[![Azure Pipelines](https://img.shields.io/azure-devops/build/explosion-ai/public/2/master.svg?logo=azure-pipelines&style=flat-square)](https://dev.azure.com/explosion-ai/public/_build?definitionId=2)
+[![pypi Version](https://img.shields.io/pypi/v/cymem.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.python.org/pypi/cymem)
+[![conda Version](https://img.shields.io/conda/vn/conda-forge/cymem.svg?style=flat-square&logo=conda-forge&logoColor=white)](https://anaconda.org/conda-forge/cymem)
 [![Python wheels](https://img.shields.io/badge/wheels-%E2%9C%93-4c1.svg?longCache=true&style=flat-square&logo=python&logoColor=white)](https://github.com/explosion/wheelwright/releases)
 
 ## Overview
