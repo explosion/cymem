@@ -33,9 +33,10 @@ expires.
 
 ## Installation
 
-Installation is via [pip](https://pypi.python.org/pypi/pip), and requires [Cython](http://cython.org).
+Installation is via [pip](https://pypi.python.org/pypi/pip), and requires [Cython](http://cython.org). Before installing, make sure that your `pip`, `setuptools` and `wheel` are up to date.
 
 ```bash
+pip install -U pip setuptools wheel
 pip install cymem
 ```
 
