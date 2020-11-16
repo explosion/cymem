@@ -79,5 +79,6 @@ jobs:
     displayName: 'Install with pip (Windows)'
 
   - script: |
+      pip install -r requirements.txt
       python -m pytest cymem
     displayName: 'Run tests'
