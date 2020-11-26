@@ -121,7 +121,7 @@ def setup_package():
             url=about["__uri__"],
             license=about["__license__"],
             ext_modules=ext_modules,
-            setup_requires=[],
+            setup_requires=["cython>=0.25"],
             classifiers=[
                 "Environment :: Console",
                 "Intended Audience :: Developers",
