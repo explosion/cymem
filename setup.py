@@ -5,13 +5,10 @@ import os
 import subprocess
 import sys
 import contextlib
+from setuptools import Extension, setup
 from distutils.command.build_ext import build_ext
 from distutils.sysconfig import get_python_inc
-
-try:
-    from setuptools import Extension, setup
-except ImportError:
-    from distutils.core import Extension, setup
+from Cython.Build import cythonize
 
 
 PACKAGES = ["cymem", "cymem.tests"]
@@ -43,19 +40,6 @@ class build_ext_subclass(build_ext, build_ext_options):
     def build_extensions(self):
         build_ext_options.build_options(self)
         build_ext.build_extensions(self)
-
-
-def generate_cython(root, source):
-    print("Cythonizing sources")
-    p = subprocess.call(
-        [sys.executable, os.path.join(root, "bin", "cythonize.py"), source]
-    )
-    if p != 0:
-        raise RuntimeError("Running cythonize failed")
-
-
-def is_source_release(path):
-    return os.path.exists(os.path.join(path, "PKG-INFO"))
 
 
 def clean(path):
@@ -97,15 +81,12 @@ def setup_package():
 
         ext_modules = []
         for mod_name in MOD_NAMES:
-            mod_path = mod_name.replace(".", "/") + ".cpp"
+            mod_path = mod_name.replace(".", "/") + ".pyx"
             ext_modules.append(
                 Extension(
                     mod_name, [mod_path], language="c++", include_dirs=include_dirs
                 )
             )
-
-        if not is_source_release(root):
-            generate_cython(root, "cymem")
 
         setup(
             name="cymem",
@@ -120,7 +101,7 @@ def setup_package():
             version=about["__version__"],
             url=about["__uri__"],
             license=about["__license__"],
-            ext_modules=ext_modules,
+            ext_modules=cythonize(ext_modules),
             setup_requires=["cython>=0.25"],
             classifiers=[
                 "Environment :: Console",
