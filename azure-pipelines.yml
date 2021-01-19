@@ -85,7 +85,7 @@ jobs:
       python -m pytest cymem
     displayName: 'Run tests'
 
-- job: 'Test self-hosted'
+- job: 'Test_self_hosted'
   strategy:
     matrix:
      Python37LinuxARM64:
