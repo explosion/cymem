@@ -9,50 +9,91 @@ jobs:
 - job: 'Test'
   strategy:
     matrix:
-#     Python36Linux:
-#       imageName: 'ubuntu-16.04'
-#       python.version: '3.6'
-#     Python36Windows:
-#       imageName: 'vs2017-win2016'
-#       python.version: '3.6'
-#     Python36Mac:
-#       imageName: 'macos-10.14'
-#       python.version: '3.6'
-#     Python37Linux:
-#       imageName: 'ubuntu-16.04'
-#       python.version: '3.7'
+     Python36Linux:
+       imageName: 'ubuntu-16.04'
+       python.version: '3.6'
+     Python36Windows:
+       imageName: 'vs2017-win2016'
+       python.version: '3.6'
+     Python36Mac:
+       imageName: 'macos-10.14'
+       python.version: '3.6'
+     Python37Linux:
+       imageName: 'ubuntu-16.04'
+       python.version: '3.7'
+     Python37Windows:
+       imageName: 'vs2017-win2016'
+       python.version: '3.7'
+     Python37Mac:
+       imageName: 'macos-10.14'
+       python.version: '3.7'
+     Python38Linux:
+       imageName: 'ubuntu-16.04'
+       python.version: '3.8'
+     Python38Windows:
+       imageName: 'vs2017-win2016'
+       python.version: '3.8'
+     Python38Mac:
+       imageName: 'macos-10.14'
+       python.version: '3.8'
+     Python39Linux:
+       imageName: 'ubuntu-16.04'
+       python.version: '3.9'
+     Python39Windows:
+       imageName: 'vs2017-win2016'
+       python.version: '3.9'
+     Python39Mac:
+       imageName: 'macos-10.14'
+       python.version: '3.9'
+    maxParallel: 4
+  pool:
+    vmImage: $(imageName)
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+      architecture: 'x64'
+
+  - script: |
+      python -m pip install --upgrade pip setuptools
+      python -m pip install -r requirements.txt
+    displayName: 'Install dependencies'
+
+  - script: |
+      python setup.py build_ext --inplace
+      python setup.py sdist
+    displayName: 'Build sdist'
+
+  - script: |
+      python -m pip freeze > installed.txt
+      python -m pip uninstall -y -r installed.txt
+    displayName: 'Uninstall all packages'
+
+  - script: |
+      python -m pip install dist/*.tar.gz
+    condition: in( variables['Agent.OS'], 'Linux', 'Darwin')
+    displayName: 'Install from sdist (Linux, Mac)'
+
+  - script: |
+      python -m pip install -e .
+    condition: eq( variables['Agent.OS'], 'Windows_NT')
+    displayName: 'Install with pip (Windows)'
+
+  - script: |
+      python -m pip install -r requirements.txt
+      python -m pytest cymem
+    displayName: 'Run tests'
+
+- job: 'Test self-hosted'
+  strategy:
+    matrix:
      Python37LinuxARM64:
        imageName: 'macmini-debian'
        python.version: '3.7'
        architecture: 'ARM64'
-#     Python37Windows:
-#       imageName: 'vs2017-win2016'
-#       python.version: '3.7'
-#     Python37Mac:
-#       imageName: 'macos-10.14'
-#       python.version: '3.7'
-#     Python38Linux:
-#       imageName: 'ubuntu-16.04'
-#       python.version: '3.8'
-#     Python38Windows:
-#       imageName: 'vs2017-win2016'
-#       python.version: '3.8'
-#     Python38Mac:
-#       imageName: 'macos-10.14'
-#       python.version: '3.8'
-#     Python39Linux:
-#       imageName: 'ubuntu-16.04'
-#       python.version: '3.9'
-#     Python39Windows:
-#       imageName: 'vs2017-win2016'
-#       python.version: '3.9'
-#     Python39Mac:
-#       imageName: 'macos-10.14'
-#       python.version: '3.9'
-    maxParallel: 4
   pool:
     name: "Default"
-    #vmImage: $(imageName)
 
   steps:
   - task: UsePythonVersion@0
@@ -62,9 +103,6 @@ jobs:
 
   - script: |
       python -m venv .venv
-    displayName: 'Install dependencies'
-
-  - script: |
       source .venv/bin/activate
       python -m pip install --upgrade pip setuptools
       python -m pip install -r requirements.txt
