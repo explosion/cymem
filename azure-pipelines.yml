@@ -9,42 +9,46 @@ jobs:
 - job: 'Test'
   strategy:
     matrix:
-      Python36Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.6'
-      Python36Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.6'
-      Python36Mac:
-        imageName: 'macos-10.14'
-        python.version: '3.6'
-      Python37Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.7'
-      Python37Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.7'
-      Python37Mac:
-        imageName: 'macos-10.14'
-        python.version: '3.7'
-      Python38Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.8'
-      Python38Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.8'
-      Python38Mac:
-        imageName: 'macos-10.14'
-        python.version: '3.8'
-      Python39Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.9'
-      Python39Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.9'
-      Python39Mac:
-        imageName: 'macos-10.14'
-        python.version: '3.9'
+#     Python36Linux:
+#       imageName: 'ubuntu-16.04'
+#       python.version: '3.6'
+#     Python36Windows:
+#       imageName: 'vs2017-win2016'
+#       python.version: '3.6'
+#     Python36Mac:
+#       imageName: 'macos-10.14'
+#       python.version: '3.6'
+#     Python37Linux:
+#       imageName: 'ubuntu-16.04'
+#       python.version: '3.7'
+     Python37LinuxARM64:
+       imageName: 'macmini-debian'
+       python.version: '3.7'
+       architecture: 'ARM64'
+#     Python37Windows:
+#       imageName: 'vs2017-win2016'
+#       python.version: '3.7'
+#     Python37Mac:
+#       imageName: 'macos-10.14'
+#       python.version: '3.7'
+#     Python38Linux:
+#       imageName: 'ubuntu-16.04'
+#       python.version: '3.8'
+#     Python38Windows:
+#       imageName: 'vs2017-win2016'
+#       python.version: '3.8'
+#     Python38Mac:
+#       imageName: 'macos-10.14'
+#       python.version: '3.8'
+#     Python39Linux:
+#       imageName: 'ubuntu-16.04'
+#       python.version: '3.9'
+#     Python39Windows:
+#       imageName: 'vs2017-win2016'
+#       python.version: '3.9'
+#     Python39Mac:
+#       imageName: 'macos-10.14'
+#       python.version: '3.9'
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -53,7 +57,7 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
-      architecture: 'x64'
+      architecture: '$(architecture)'
 
   - script: |
       python -m pip install --upgrade pip setuptools
