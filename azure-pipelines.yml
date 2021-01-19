@@ -62,7 +62,7 @@ jobs:
 
   - script: |
       python -m pip install --upgrade pip setuptools
-      pip install -r requirements.txt
+      python -m pip install -r requirements.txt
     displayName: 'Install dependencies'
 
   - script: |
@@ -71,19 +71,19 @@ jobs:
     displayName: 'Build sdist'
 
   - script: |
-      pip freeze > installed.txt
-      pip uninstall -y -r installed.txt
+      python -m pip freeze > installed.txt
+      python -m pip uninstall -y -r installed.txt
     displayName: 'Uninstall all packages'
 
-  - script: pip install dist/*.tar.gz
+  - script: python -m pip install dist/*.tar.gz
     condition: in( variables['Agent.OS'], 'Linux', 'Darwin')
     displayName: 'Install from sdist (Linux, Mac)'
 
-  - script: pip install -e .
+  - script: python -m pip install -e .
     condition: eq( variables['Agent.OS'], 'Windows_NT')
     displayName: 'Install with pip (Windows)'
 
   - script: |
-      pip install -r requirements.txt
+      python -m pip install -r requirements.txt
       python -m pytest cymem
     displayName: 'Run tests'
