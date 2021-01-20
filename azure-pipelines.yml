@@ -52,8 +52,8 @@ jobs:
   steps:
   - template: .azure/steps.yml
     parameters:
-      python_version: $(python.version)
-      architecture: $(architecture)
+      python_version: '$(python.version)'
+      architecture: 'x64'
 
 - job: 'Test_self_hosted'
   strategy:
@@ -80,5 +80,5 @@ jobs:
   steps:
   - template: .azure/steps.yml
     parameters:
-      python_version: $(python.version)
-      architecture: $(architecture)
+      python_version: '$(python.version)'
+      architecture: '$(architecture)'
