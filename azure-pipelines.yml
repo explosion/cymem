@@ -114,38 +114,31 @@ jobs:
       architecture: '$(architecture)'
 
   - script: |
-          #python -m venv .venv
-          #source .venv/bin/activate
       python -m pip install --upgrade pip setuptools
       python -m pip install -r requirements.txt
     displayName: 'Install dependencies'
 
   - script: |
-          #source .venv/bin/activate
       python setup.py build_ext --inplace
       python setup.py sdist
     displayName: 'Build sdist'
 
   - script: |
-          #source .venv/bin/activate
       python -m pip freeze > installed.txt
       python -m pip uninstall -y -r installed.txt
     displayName: 'Uninstall all packages'
 
   - script: |
-          #source .venv/bin/activate
       python -m pip install dist/*.tar.gz
     condition: in( variables['Agent.OS'], 'Linux', 'Darwin')
     displayName: 'Install from sdist (Linux, Mac)'
 
   - script: |
-          #source .venv/bin/activate
       python -m pip install -e .
     condition: eq( variables['Agent.OS'], 'Windows_NT')
     displayName: 'Install with pip (Windows)'
 
   - script: |
-          #source .venv/bin/activate
       python -m pip install -r requirements.txt
       python -m pytest cymem
     displayName: 'Run tests'
