@@ -88,9 +88,21 @@ jobs:
 - job: 'Test_self_hosted'
   strategy:
     matrix:
+     Python36LinuxARM64:
+       imageName: 'macmini-debian'
+       python.version: '3.6'
+       architecture: 'ARM64'
      Python37LinuxARM64:
        imageName: 'macmini-debian'
        python.version: '3.7'
+       architecture: 'ARM64'
+     Python38LinuxARM64:
+       imageName: 'macmini-debian'
+       python.version: '3.8'
+       architecture: 'ARM64'
+     Python39LinuxARM64:
+       imageName: 'macmini-debian'
+       python.version: '3.9'
        architecture: 'ARM64'
   pool:
     name: "Default"
