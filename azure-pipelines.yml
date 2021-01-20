@@ -77,5 +77,5 @@ jobs:
   steps:
   - template: .azure/steps.yml
     parameters:
-      python.version: $(python.version)
-      architecture: $(architecture)
+      python.version: ${{ python.version }}
+      architecture: ${{ architecture }}
