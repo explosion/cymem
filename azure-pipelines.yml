@@ -6,7 +6,7 @@ trigger:
 
 jobs:
 
-- job: 'Test'
+- job: 'Tests1'
   strategy:
     matrix:
      Python36Linux:
@@ -55,25 +55,17 @@ jobs:
       python_version: '$(python.version)'
       architecture: 'x64'
 
-- job: 'Test_self_hosted'
+- job: 'Tests2'
   strategy:
     matrix:
      Python36LinuxARM64:
-       imageName: 'macmini-debian'
        python.version: '3.6'
-       architecture: 'ARM64'
      Python37LinuxARM64:
-       imageName: 'macmini-debian'
        python.version: '3.7'
-       architecture: 'ARM64'
      Python38LinuxARM64:
-       imageName: 'macmini-debian'
        python.version: '3.8'
-       architecture: 'ARM64'
      Python39LinuxARM64:
-       imageName: 'macmini-debian'
        python.version: '3.9'
-       architecture: 'ARM64'
   pool:
     name: "Default"
 
@@ -81,4 +73,4 @@ jobs:
   - template: .azure/steps.yml
     parameters:
       python_version: '$(python.version)'
-      architecture: '$(architecture)'
+      architecture: 'ARM64'
