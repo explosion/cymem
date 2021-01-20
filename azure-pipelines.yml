@@ -75,4 +75,7 @@ jobs:
     name: "Default"
 
   steps:
+  - parameters:
+    - python.version: $(python.version)
+    - architecture: $(architecture)
   - template: .azure/steps.yml
