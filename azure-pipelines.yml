@@ -88,3 +88,4 @@ jobs:
     parameters:
       python_version: '$(python.version)'
       architecture: 'X64'
+      prefix: 'arch -arm64'
