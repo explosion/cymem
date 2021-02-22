@@ -55,25 +55,25 @@ jobs:
       python_version: '$(python.version)'
       architecture: 'x64'
 
-#- job: 'Tests2'
-#  strategy:
-#    matrix:
-#      Python36LinuxARM64:
-#        python.version: '3.6'
-#      Python37LinuxARM64:
-#        python.version: '3.7'
-#      Python38LinuxARM64:
-#        python.version: '3.8'
-#      Python39LinuxARM64:
-#        python.version: '3.9'
-#  pool:
-#    name: "Default"
-#
-#  steps:
-#  - template: .azure/steps.yml
-#    parameters:
-#      python_version: '$(python.version)'
-#      architecture: 'ARM64'
+- job: 'Tests2'
+  strategy:
+    matrix:
+      Python36LinuxARM64:
+        python.version: '3.6'
+      Python37LinuxARM64:
+        python.version: '3.7'
+      Python38LinuxARM64:
+        python.version: '3.8'
+      Python39LinuxARM64:
+        python.version: '3.9'
+  pool:
+    name: "Default"
+
+  steps:
+  - template: .azure/steps.yml
+    parameters:
+      python_version: '$(python.version)'
+      architecture: 'ARM64'
 
 - job: 'Tests3'
   strategy:
