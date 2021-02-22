@@ -67,7 +67,7 @@ jobs:
       Python39LinuxARM64:
         python.version: '3.9'
   pool:
-    name: "Default"
+    name: "LinuxARM64"
 
   steps:
   - template: .azure/steps.yml
@@ -81,7 +81,7 @@ jobs:
       Python39MacARM64:
         python.version: '3.9'
   pool:
-    name: "Default"
+    name: "MacARM64"
 
   steps:
   - template: .azure/steps.yml
