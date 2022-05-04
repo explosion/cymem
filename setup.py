@@ -4,13 +4,13 @@ import io
 import os
 import sys
 import contextlib
-from setuptools import Extension, setup
+from setuptools import Extension, setup, find_packages
 from distutils.command.build_ext import build_ext
 from distutils.sysconfig import get_python_inc
 from Cython.Build import cythonize
 
 
-PACKAGES = ["cymem", "cymem.tests"]
+PACKAGES = find_packages()
 MOD_NAMES = ["cymem.cymem"]
 
 
