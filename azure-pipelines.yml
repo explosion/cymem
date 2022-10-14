@@ -51,13 +51,13 @@ jobs:
       Python310Mac:
         imageName: 'macos-latest'
         python.version: '3.10'
-      Python310Linux:
+      Python311Linux:
         imageName: 'ubuntu-latest'
         python.version: '3.11'
-      Python310Windows:
+      Python311Windows:
         imageName: 'windows-latest'
         python.version: '3.11'
-      Python310Mac:
+      Python311Mac:
         imageName: 'macos-latest'
         python.version: '3.11'
     maxParallel: 4
