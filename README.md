@@ -2,11 +2,11 @@
 
 # cymem: A Cython Memory Helper
 
-cymem provides two small memory-management helpers for Cython. They make it
-easy to tie memory to a Python object's life-cycle, so that the memory is freed
-when the object is garbage collected.
+cymem provides two small memory-management helpers for Cython. They make it easy
+to tie memory to a Python object's life-cycle, so that the memory is freed when
+the object is garbage collected.
 
-[![Azure Pipelines](https://img.shields.io/azure-devops/build/explosion-ai/public/2/master.svg?logo=azure-pipelines&style=flat-square)](https://dev.azure.com/explosion-ai/public/_build?definitionId=2)
+[![tests](https://github.com/explosion/cymem/actions/workflows/tests.yml/badge.svg)](https://github.com/explosion/cymem/actions/workflows/tests.yml)
 [![pypi Version](https://img.shields.io/pypi/v/cymem.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.python.org/pypi/cymem)
 [![conda Version](https://img.shields.io/conda/vn/conda-forge/cymem.svg?style=flat-square&logo=conda-forge&logoColor=white)](https://anaconda.org/conda-forge/cymem)
 [![Python wheels](https://img.shields.io/badge/wheels-%E2%9C%93-4c1.svg?longCache=true&style=flat-square&logo=python&logoColor=white)](https://github.com/explosion/wheelwright/releases)
@@ -27,13 +27,15 @@ The `Pool` object saves the memory addresses internally, and frees them when the
 object is garbage collected. Typically you'll attach the `Pool` to some cdef'd
 class. This is particularly handy for deeply nested structs, which have
 complicated initialization functions. Just pass the `Pool` object into the
-initializer, and you don't have to worry about freeing your struct at all —
-all of the calls to `Pool.alloc` will be automatically freed when the `Pool`
+initializer, and you don't have to worry about freeing your struct at all — all
+of the calls to `Pool.alloc` will be automatically freed when the `Pool`
 expires.
 
 ## Installation
 
-Installation is via [pip](https://pypi.python.org/pypi/pip), and requires [Cython](http://cython.org). Before installing, make sure that your `pip`, `setuptools` and `wheel` are up to date.
+Installation is via [pip](https://pypi.python.org/pypi/pip), and requires
+[Cython](http://cython.org). Before installing, make sure that your `pip`,
+`setuptools` and `wheel` are up to date.
 
 ```bash
 pip install -U pip setuptools wheel
@@ -42,10 +44,10 @@ pip install cymem
 
 ## Example Use Case: An array of structs
 
-Let's say we want a sequence of sparse matrices. We need fast access, and
-a Python list isn't performing well enough. So, we want a C-array or C++
-vector, which means we need the sparse matrix to be a C-level struct — it
-can't be a Python class. We can write this easily enough in Cython:
+Let's say we want a sequence of sparse matrices. We need fast access, and a
+Python list isn't performing well enough. So, we want a C-array or C++ vector,
+which means we need the sparse matrix to be a C-level struct — it can't be a
+Python class. We can write this easily enough in Cython:
 
 ```python
 """Example without Cymem
@@ -113,9 +115,9 @@ cdef void* sparse_matrix_free(SparseMatrix* sm) except *:
     free(sm)
 ```
 
-We wrap the data structure in a Python ref-counted class at as low a level as
-we can, given our performance constraints. This allows us to allocate and free
-the memory in the `__cinit__` and `__dealloc__` Cython special methods.
+We wrap the data structure in a Python ref-counted class at as low a level as we
+can, given our performance constraints. This allows us to allocate and free the
+memory in the `__cinit__` and `__dealloc__` Cython special methods.
 
 However, it's very easy to make mistakes when writing the `__dealloc__` and
 `sparse_matrix_free` functions, leading to memory leaks. cymem prevents you from
@@ -179,15 +181,15 @@ cdef SparseMatrix* sparse_matrix_init_cymem(Pool mem, list py_matrix) except NUL
 ```
 
 All that the `Pool` class does is remember the addresses it gives out. When the
-`MatrixArray` object is garbage-collected, the `Pool` object will also be garbage
-collected, which triggers a call to `Pool.__dealloc__`. The `Pool` then frees all of
-its addresses. This saves you from walking back over your nested data structures
-to free them, eliminating a common class of errors.
+`MatrixArray` object is garbage-collected, the `Pool` object will also be
+garbage collected, which triggers a call to `Pool.__dealloc__`. The `Pool` then
+frees all of its addresses. This saves you from walking back over your nested
+data structures to free them, eliminating a common class of errors.
 
 ## Custom Allocators
 
-Sometimes external C libraries use private functions to allocate and free objects,
-but we'd still like the laziness of the `Pool`.
+Sometimes external C libraries use private functions to allocate and free
+objects, but we'd still like the laziness of the `Pool`.
 
 ```python
 from cymem.cymem cimport Pool, WrapMalloc, WrapFree
