@@ -47,13 +47,12 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           asset_paths: '["./dist/*.tar.gz"]'
-        permissions:
-          contents: write
-          checks: write
-
-          actions: read
-          issues: read
-          packages: write
-          pull-requests: read
-          repository-projects: read
+    permissions:
+      contents: write
+      checks: write
+      actions: read
+      issues: read
+      packages: write
+      pull-requests: read
+      repository-projects: read
           statuses: read
