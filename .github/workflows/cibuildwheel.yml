@@ -41,12 +41,17 @@ jobs:
 
       - name: Build sdist
         run: pipx run build --sdist
-      - name: Upload release sdist
-        uses: alexellis/upload-assets@0.4.0
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
         with:
-          asset_paths: '["./dist/*.tar.gz"]'
+          name: cibw-sdist
+          path: dist/*.tar.gz
+
+  # After the build has finished, download the artifacts from the action
+  # and upload them to the release. When we publish the release, the
+  # assets will be downloaded from it and uploaded to PyPi.
+  upload_assets_to_release:
+    needs: [build_sdist]
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       checks: write
@@ -56,3 +61,16 @@ jobs:
       pull-requests: read
       repository-projects: read
       statuses: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          # unpacks all CIBW artifacts into dist/
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+      - uses: alexellis/upload-assets@0.4.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          asset_paths: '["./dist/*"]'
+
