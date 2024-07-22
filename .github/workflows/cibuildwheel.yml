@@ -26,11 +26,12 @@ jobs:
           output-dir: wheelhouse
           config-file: "{package}/pyproject.toml"
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload release binaries
+        uses: alexellis/upload-assets@0.4.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
-          path: ./wheelhouse/*.whl
-          upload_url: ${{ github.event.release.upload_url }}
+          asset_paths: '["./dist/*.whl"]'
 
   build_sdist:
     name: Build source distribution
@@ -40,10 +41,9 @@ jobs:
 
       - name: Build sdist
         run: pipx run build --sdist
-
-      - uses: actions/upload-artifact@v4
+      - name: Upload release sdist
+        uses: alexellis/upload-assets@0.4.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          name: cibw-sdist
-          path: dist/*.tar.gz
-          upload_url: ${{ github.event.release.upload_url }}
-
+          asset_paths: '["./dist/*.tar.gz"]'
