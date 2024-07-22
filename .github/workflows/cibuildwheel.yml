@@ -55,4 +55,4 @@ jobs:
       packages: write
       pull-requests: read
       repository-projects: read
-          statuses: read
+      statuses: read
