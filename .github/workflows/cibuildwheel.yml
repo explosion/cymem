@@ -6,32 +6,32 @@ on:
       - created
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ubuntu-latest, windows-latest, macos-13]
+  #build_wheels:
+  #  name: Build wheels on ${{ matrix.os }}
+  #  runs-on: ${{ matrix.os }}
+  #  strategy:
+  #    matrix:
+  #      # macos-13 is an intel runner, macos-14 is apple silicon
+  #      os: [ubuntu-latest, windows-latest, macos-13]
 
-    steps:
-      - uses: actions/checkout@v4
+  #  steps:
+  #    - uses: actions/checkout@v4
 
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.19.1
-        env:
-          CIBW_SOME_OPTION: value
-        with:
-          package-dir: .
-          output-dir: wheelhouse
-          config-file: "{package}/pyproject.toml"
+  #    - name: Build wheels
+  #      uses: pypa/cibuildwheel@v2.19.1
+  #      env:
+  #        CIBW_SOME_OPTION: value
+  #      with:
+  #        package-dir: .
+  #        output-dir: wheelhouse
+  #        config-file: "{package}/pyproject.toml"
 
-      - name: Upload release binaries
-        uses: alexellis/upload-assets@0.4.0
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          asset_paths: '["./dist/*.whl"]'
+  #    - name: Upload release binaries
+  #      uses: alexellis/upload-assets@0.4.0
+  #      env:
+  #        GITHUB_TOKEN: ${{ github.token }}
+  #      with:
+  #        asset_paths: '["./dist/*.whl"]'
 
   build_sdist:
     name: Build source distribution
@@ -47,3 +47,13 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           asset_paths: '["./dist/*.tar.gz"]'
+        permissions:
+          contents: write
+          checks: write
+
+          actions: read
+          issues: read
+          packages: write
+          pull-requests: read
+          repository-projects: read
+          statuses: read
