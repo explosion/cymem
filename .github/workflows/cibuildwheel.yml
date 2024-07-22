@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/blis
+      url: https://pypi.org/p/cymem
     permissions:
       id-token: write
     if: github.event_name == 'release' && github.event.action == 'published'
