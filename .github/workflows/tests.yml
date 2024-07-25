@@ -2,8 +2,11 @@ name: tests
 
 on:
   push:
+    tags-ignore:
+      - '**'
     paths-ignore:
       - "*.md"
+      - ".github/*"
   pull_request:
     types: [opened, synchronize, reopened, edited]
     paths-ignore:
