@@ -3,7 +3,9 @@ name: Build
 on:
   push:
     tags:
-      - 'release-v[0-9]+.[0-9]+.[0-9]+\.*'
+      # ytf did they invent their own syntax that's almost regex?
+      # ** matches 'zero or more of any character'
+      - 'release-v[0-9]+.[0-9]+.[0-9]+**'
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
