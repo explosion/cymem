@@ -26,4 +26,4 @@ jobs:
           tag: ${{ github.event.release.tag_name }}
           fileName: '*'
           out-file-path: 'dist'
-    - uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@release/v1
