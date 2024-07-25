@@ -10,7 +10,6 @@ on:
 
 jobs:
   upload_pypi:
-    needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -24,7 +23,7 @@ jobs:
     steps:
       - uses: robinraju/release-downloader@v1
         with:
-          tag: {{ github.event.release.tag_name }}
+          tag: ${{ github.event.release.tag_name }}
           fileName: '*'
           out-file-path: 'dist'
           # unpacks all CIBW artifacts into dist/
