@@ -1,10 +1,10 @@
 name: Build
 
 on:
-  release:
-    types:
-      - created
-
+  push:
+    tags:
+      - "*"
+      #- 'release-v[0-9]+.[0-9]+.[0-9]+'
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -16,7 +16,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.19.1
         env:
@@ -42,12 +41,8 @@ jobs:
         with:
           name: cibw-sdist
           path: dist/*.tar.gz
-
-  # After the build has finished, download the artifacts from the action
-  # and upload them to the release. When we publish the release, the
-  # assets will be downloaded from it and uploaded to PyPi.
-  upload_assets_to_release:
-    needs: [build_sdist, build_wheels]
+  create_release:
+    needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -59,6 +54,33 @@ jobs:
       repository-projects: read
       statuses: read
     steps:
+      - name: Get the tag name and determine if it's a prerelease
+        id: get_tag_info
+        run: |
+          FULL_TAG=${GITHUB_REF#refs/tags/}
+          if [[ $FULL_TAG == release-* ]]; then
+            TAG_NAME=${FULL_TAG#release-}
+            IS_PRERELEASE=false
+          elif [[ $FULL_TAG == prerelease-* ]]; then
+            TAG_NAME=${FULL_TAG#prerelease-}
+            IS_PRERELEASE=true
+          else
+            echo "Tag does not match expected patterns" >&2
+            exit 1
+          fi
+          echo "FULL_TAG=$TAG_NAME" >> $GITHUB_ENV
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "IS_PRERELEASE=$IS_PRERELEASE" >> $GITHUB_ENV
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.FULL_TAG }}
+          release_name: ${{ env.TAG_NAME }}
+          draft: true
+          prerelease: ${{ env.IS_PRERELEASE }}
       - uses: actions/download-artifact@v4
         with:
           # unpacks all CIBW artifacts into dist/
@@ -66,6 +88,7 @@ jobs:
           path: dist
           merge-multiple: true
       - uses: alexellis/upload-assets@0.4.0
+        # The action fetches the release from the tag ref
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
