@@ -71,6 +71,12 @@ jobs:
           echo "FULL_TAG=$TAG_NAME" >> $GITHUB_ENV
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
           echo "IS_PRERELEASE=$IS_PRERELEASE" >> $GITHUB_ENV
+      - uses: actions/download-artifact@v4
+        with:
+          # unpacks all CIBW artifacts into dist/
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
       - name: Create Draft Release
         id: create_release
         uses: softprops/action-gh-release@v2
@@ -79,19 +85,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.FULL_TAG }}
-          release_name: ${{ env.TAG_NAME }}
+          name: ${{ env.TAG_NAME }}
           draft: true
           prerelease: ${{ env.IS_PRERELEASE }}
-      - uses: actions/download-artifact@v4
-        with:
-          # unpacks all CIBW artifacts into dist/
-          pattern: cibw-*
-          path: dist
-          merge-multiple: true
-      - uses: alexellis/upload-assets@0.4.0
-        # The action fetches the release from the tag ref
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          asset_paths: '["./dist/*"]'
-
+          files: "./dist/*" 
