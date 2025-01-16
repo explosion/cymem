@@ -1,5 +1,5 @@
 __title__ = "cymem"
-__version__ = "2.0.10"
+__version__ = "2.0.11"
 __summary__ = "Manage calls to calloc/free through Cython"
 __uri__ = "https://github.com/explosion/cymem"
 __author__ = "Matthew Honnibal"
