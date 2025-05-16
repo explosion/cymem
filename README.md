@@ -192,7 +192,7 @@ cdef class MatrixArray:
         self.length = len(py_matrices)
         self.matrices = <SparseMatrix**>self.mem.alloc(self.length, sizeof(SparseMatrix*))
         for i, py_matrix in enumerate(py_matrices):
-            self.matrices[i] = sparse_matrix_init(self.mem, py_matrix)
+            self.matrices[i] = sparse_matrix_init_cymem(self.mem, py_matrix)
 
 cdef SparseMatrix* sparse_matrix_init_cymem(Pool mem, list py_matrix) except NULL:
     sm = <SparseMatrix*>mem.alloc(1, sizeof(SparseMatrix))
