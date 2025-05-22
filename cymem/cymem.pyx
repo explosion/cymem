@@ -8,6 +8,12 @@ import warnings
 
 WARN_ZERO_ALLOC = False
 
+cdef bint CYTHON_FREE_THREADING
+
+IF CYTHON_FREE_THREADING:
+    from libcpp.mutex cimport once_flag, call_once
+    cdef once_flag _lazy_import_lock
+
 cdef class PyMalloc:
     cdef void _set(self, malloc_t malloc):
         self.malloc = malloc
@@ -15,6 +21,24 @@ cdef class PyMalloc:
 cdef PyMalloc WrapMalloc(malloc_t malloc):
     cdef PyMalloc o = PyMalloc()
     o._set(malloc)
+    return o
+
+cdef class PyCalloc:
+    cdef void _set(self, calloc_t calloc):
+        self.calloc = calloc
+
+cdef PyCalloc WrapCalloc(calloc_t calloc):
+    cdef PyCalloc o = PyCalloc()
+    o._set(calloc)
+    return o
+
+cdef class PyRealloc:
+    cdef void _set(self, realloc_t realloc):
+        self.realloc = realloc
+
+cdef PyRealloc WrapRealloc(realloc_t realloc):
+    cdef PyRealloc o = PyRealloc()
+    o._set(realloc)
     return o
 
 cdef class PyFree:
@@ -27,6 +51,8 @@ cdef PyFree WrapFree(free_t free):
     return o
 
 Default_Malloc = WrapMalloc(PyMem_Malloc)
+Default_Calloc = WrapCalloc(PyMem_Calloc)
+Default_Realloc = WrapRealloc(PyMem_Realloc)
 Default_Free = WrapFree(PyMem_Free)
 
 cdef class Pool:
@@ -43,15 +69,21 @@ cdef class Pool:
         size (size_t): The current size (in bytes) allocated by the pool.
         addresses (dict): The currently allocated addresses and their sizes. Read-only.
         pymalloc (PyMalloc): The allocator to use (default uses PyMem_Malloc).
+        pycalloc (PyCalloc): The allocator to use (default uses PyMem_Calloc).
+        pyrealloc (PyRealloc): The allocator to use (default uses PyMem_Realloc).
         pyfree (PyFree): The free to use (default uses PyMem_Free).
     """
 
     def __cinit__(self, PyMalloc pymalloc=Default_Malloc,
+                  PyCalloc pycalloc = Default_Calloc,
+                  PyRealloc pyrealloc = Default_Realloc,
                   PyFree pyfree=Default_Free):
         self.size = 0
         self.addresses = {}
         self.refs = []
         self.pymalloc = pymalloc
+        self.pycalloc = pycalloc
+        self.pyrealloc = pyrealloc
         self.pyfree = pyfree
 
     def __dealloc__(self):
@@ -69,10 +101,9 @@ cdef class Pool:
         """
         if WARN_ZERO_ALLOC and (number == 0 or elem_size == 0):
             warnings.warn("Allocating zero bytes")
-        cdef void* p = self.pymalloc.malloc(number * elem_size)
+        cdef void* p = self.pycalloc.calloc(number * elem_size)
         if p == NULL:
             raise MemoryError("Error assigning %d bytes" % (number * elem_size))
-        memset(p, 0, number * elem_size)
         self.addresses[<size_t>p] = number * elem_size
         self.size += number * elem_size
         return p
@@ -89,13 +120,12 @@ cdef class Pool:
         if new_size == 0:
             raise ValueError("Realloc requires new_size > 0")
         assert new_size > self.addresses[<size_t>p]
-        cdef void* new_ptr = self.alloc(1, new_size)
-        if new_ptr == NULL:
+        self.realloc(p, new_size)
+        if p == NULL:
             raise MemoryError("Error reallocating to %d bytes" % new_size)
-        memcpy(new_ptr, p, self.addresses[<size_t>p])
-        self.free(p)
-        self.addresses[<size_t>new_ptr] = new_size
-        return new_ptr
+        # Resize in place
+        self.addresses[<size_t>p] = new_size
+        return p
 
     cdef void free(self, void* p) except *:
         """Frees the memory block pointed to by p, which must have been returned

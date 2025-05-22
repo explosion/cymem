@@ -1,4 +1,6 @@
 ctypedef void* (*malloc_t)(size_t n)
+ctypedef void* (*calloc_t)(size_t n)
+ctypedef void* (*realloc_t)(size_t n)
 ctypedef void (*free_t)(void *p)
 
 cdef class PyMalloc:
