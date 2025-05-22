@@ -16,9 +16,13 @@ PACKAGES = find_packages()
 MOD_NAMES = ["cymem.cymem"]
 
 compiler_directives = dict()
+compiler_tenv = dict()
 
 if Version(cython_version) >= Version("3.1.0"):
-    compiler_directives["freethreading_compatible"] =  rue
+    compiler_directives["freethreading_compatible"] = True
+    compiler_tenv["CYTHON_FREE_THREADING"] = True
+else:
+    compiler_tenv["CYTHON_FREE_THREADING"] = False
 
 # By subclassing build_extensions we have the actual compiler that will be used which is really known only after finalize_options
 # http://stackoverflow.com/questions/724664/python-distutils-how-to-get-a-compiler-that-is-going-to-be-used
@@ -107,7 +111,8 @@ def setup_package():
             url=about["__uri__"],
             license=about["__license__"],
             ext_modules=cythonize(ext_modules, language_level=3,
-                                  compiler_directives=compiler_directives),
+                                  compiler_directives=compiler_directives,
+                                  compile_time_env=compiler_tenv),
             setup_requires=["cython>=0.25"],
             classifiers=[
                 "Environment :: Console",
