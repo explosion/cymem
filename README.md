@@ -59,18 +59,13 @@ from packaging.version import Version
 
 
 compiler_directives = dict()
-compiler_tenv = dict()
 
 if Version(cython_version) >= Version("3.1.0"):
     compiler_directives["freethreading_compatible"] = True
-    compiler_tenv["CYTHON_FREE_THREADING"] = True
-else:
-    compiler_tenv["CYTHON_FREE_THREADING"] = False
 
 setup(
     ext_modules = cythonize("*.pyx", language_level=3,
-                                  compiler_directives=compiler_directives,
-                                  compile_time_env=compiler_tenv)
+                                  compiler_directives=compiler_directives)
 )
 ```
 
