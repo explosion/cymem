@@ -42,6 +42,12 @@ pip install -U pip setuptools wheel
 pip install cymem
 ```
 
+### Free threading
+
+`cymem` has support for being built and run under free-threaded CPython.
+Currently `Pool` is not thread safe when used from multiple threads at once;
+**please avoid sharing a single** `Pool` instance between threads.
+
 ## Example Use Case: An array of structs
 
 Let's say we want a sequence of sparse matrices. We need fast access, and a
