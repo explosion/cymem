@@ -48,27 +48,6 @@ pip install cymem
 Currently `Pool` is not thread safe when used from multiple threads at once;
 **please avoid sharing a single** `Pool` instance between threads.
 
-Also remember to declare `freethreading_compatible` for the example case below:
-
-``` python
-from setuptools import setup
-from Cython.Build import cythonize
-
-from Cython.Compiler.Version import version as cython_version
-from packaging.version import Version
-
-
-compiler_directives = dict()
-
-if Version(cython_version) >= Version("3.1.0"):
-    compiler_directives["freethreading_compatible"] = True
-
-setup(
-    ext_modules = cythonize("*.pyx", language_level=3,
-                                  compiler_directives=compiler_directives)
-)
-```
-
 ## Example Use Case: An array of structs
 
 Let's say we want a sequence of sparse matrices. We need fast access, and a

@@ -18,7 +18,7 @@ MOD_NAMES = ["cymem.cymem"]
 compiler_directives = dict()
 
 if Version(cython_version) >= Version("3.1.0"):
-    compiler_directives["freethreading_compatible"] =  rue
+    compiler_directives["freethreading_compatible"] =  True
 
 # By subclassing build_extensions we have the actual compiler that will be used which is really known only after finalize_options
 # http://stackoverflow.com/questions/724664/python-distutils-how-to-get-a-compiler-that-is-going-to-be-used
