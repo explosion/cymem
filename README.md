@@ -42,6 +42,38 @@ pip install -U pip setuptools wheel
 pip install cymem
 ```
 
+### Free threading
+
+`cymem` has support for being built and run under free-threaded CPython.
+Currently `Pool` is not thread safe when used from multiple threads at once;
+**please avoid sharing a single** `Pool` instance between threads.
+
+Also remember to declare `freethreading_compatible` for the example case below:
+
+``` python
+from setuptools import setup
+from Cython.Build import cythonize
+
+from Cython.Compiler.Version import version as cython_version
+from packaging.version import Version
+
+
+compiler_directives = dict()
+compiler_tenv = dict()
+
+if Version(cython_version) >= Version("3.1.0"):
+    compiler_directives["freethreading_compatible"] = True
+    compiler_tenv["CYTHON_FREE_THREADING"] = True
+else:
+    compiler_tenv["CYTHON_FREE_THREADING"] = False
+
+setup(
+    ext_modules = cythonize("*.pyx", language_level=3,
+                                  compiler_directives=compiler_directives,
+                                  compile_time_env=compiler_tenv)
+)
+```
+
 ## Example Use Case: An array of structs
 
 Let's say we want a sequence of sparse matrices. We need fast access, and a
@@ -160,7 +192,7 @@ cdef class MatrixArray:
         self.length = len(py_matrices)
         self.matrices = <SparseMatrix**>self.mem.alloc(self.length, sizeof(SparseMatrix*))
         for i, py_matrix in enumerate(py_matrices):
-            self.matrices[i] = sparse_matrix_init(self.mem, py_matrix)
+            self.matrices[i] = sparse_matrix_init_cymem(self.mem, py_matrix)
 
 cdef SparseMatrix* sparse_matrix_init_cymem(Pool mem, list py_matrix) except NULL:
     sm = <SparseMatrix*>mem.alloc(1, sizeof(SparseMatrix))
