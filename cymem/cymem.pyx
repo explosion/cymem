@@ -115,17 +115,21 @@ cdef class Pool:
 
         If p is not in the Pool or new_size is 0, a MemoryError is raised.
         """
+        cdef void* p_new
         if <size_t>p not in self.addresses:
             raise ValueError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
         if new_size == 0:
             raise ValueError("Realloc requires new_size > 0")
         assert new_size > self.addresses[<size_t>p]
-        self.realloc(p, new_size)
-        if p == NULL:
+        old_size_val = self.addresses[<size_t>p]
+        p_new = self.pyrealloc.realloc(p, new_size)
+        if p_new == NULL:
             raise MemoryError("Error reallocating to %d bytes" % new_size)
         # Resize in place
-        self.addresses[<size_t>p] = new_size
-        return p
+        self.addresses.pop(<size_t>p_old)
+        self.addresses[<size_t>p_new] = new_size
+        self.size = (self.size - old_size_val) + new_size
+        return p_new
 
     cdef void free(self, void* p) except *:
         """Frees the memory block pointed to by p, which must have been returned
