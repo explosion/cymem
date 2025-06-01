@@ -8,11 +8,17 @@ from setuptools import Extension, setup, find_packages
 from setuptools.command.build_ext import build_ext
 from sysconfig import get_path
 from Cython.Build import cythonize
+from Cython.Compiler.Version import version as cython_version
+from packaging.version import Version
 
 
 PACKAGES = find_packages()
 MOD_NAMES = ["cymem.cymem"]
 
+compiler_directives = dict()
+
+if Version(cython_version) >= Version("3.1.0"):
+    compiler_directives["freethreading_compatible"] =  True
 
 # By subclassing build_extensions we have the actual compiler that will be used which is really known only after finalize_options
 # http://stackoverflow.com/questions/724664/python-distutils-how-to-get-a-compiler-that-is-going-to-be-used
@@ -100,7 +106,8 @@ def setup_package():
             version=about["__version__"],
             url=about["__uri__"],
             license=about["__license__"],
-            ext_modules=cythonize(ext_modules, language_level=2),
+            ext_modules=cythonize(ext_modules, language_level=3,
+                                  compiler_directives=compiler_directives),
             setup_requires=["cython>=0.25"],
             classifiers=[
                 "Environment :: Console",
