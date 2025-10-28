@@ -117,6 +117,7 @@ def setup_package():
                 "Programming Language :: Python :: 3.12",
                 "Programming Language :: Python :: 3.13",
                 "Programming Language :: Python :: 3.14",
+                "Programming Language :: Python :: Free Threading :: 2 - Beta",
                 "Topic :: Scientific/Engineering",
             ],
             cmdclass={"build_ext": build_ext_subclass},
