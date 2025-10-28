@@ -46,15 +46,20 @@ cdef class Pool:
         pyfree (PyFree): The free to use (default uses PyMem_Free).
 
     Thread-safety:
-        This class is thread-safe in CPython 3.13+ free-threaded builds.
-        All public methods can be safely called from multiple threads.
+        All public methods in this class can be safely called from multiple threads.
     """
 
     def __cinit__(self, PyMalloc pymalloc=Default_Malloc,
                   PyFree pyfree=Default_Free):
+        # size, addresses and refs are mutable. Changing more than one of them
+        # requires locking to prevent data races. Changing one of them by calling
+        # Python operations is okay without locking because most Python operations
+        # are atomic.
         self.size = 0
         self.addresses = {}
         self.refs = []
+
+        # pymalloc and pyfree are immutable.
         self.pymalloc = pymalloc
         self.pyfree = pyfree
 
@@ -128,6 +133,7 @@ cdef class Pool:
         self.pyfree.free(p)
 
     def own_pyref(self, object py_ref):
+        # Calling append here is atomic, no critical section needed.
         self.refs.append(py_ref)
 
 

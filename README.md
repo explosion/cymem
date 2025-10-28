@@ -204,11 +204,13 @@ free-threaded builds (PEP 703). All operations on the Pool, including `alloc()`,
 
 **Key guarantees:**
 - Multiple threads can safely call `alloc()`, `free()`, and `realloc()` on the
-    same Pool instance
+    same `Pool` instance.
 - The Pool's internal bookkeeping (`addresses` dict and `size` accounting) is
-    protected from race conditions
+    protected from race conditions. Reading the internal state without
+    holding a lock on the `Pool` instance via a critical section is not
+    thread-safe.
 
 **Important notes:**
 - Individual `Pool` instances are thread-safe, but you are still responsible
-    for proper synchronization when accessing the memory contents themselves
+    for proper synchronization when accessing the memory contents themselves.
 - Custom memory allocators need to be thread-safe themselves.
