@@ -94,28 +94,27 @@ cdef class Pool:
         a non-NULL pointer to the new block. new_size must be larger than the
         original.
 
-        If p is not in the Pool or new_size is 0, a ValueError is raised.
+        If p is not in the Pool or new_size isn't larger than the previous size,
+        a ValueError is raised.
         """
-        if new_size == 0:
-            raise ValueError("Realloc requires new_size > 0")
-
         cdef size_t old_size
         cdef void* new_ptr
         with cython.critical_section(self):
             if <size_t>p not in self.addresses:
                 raise ValueError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
             old_size = self.addresses[<size_t>p]
-            assert new_size > old_size
+            if new_size <= old_size:
+                raise ValueError("Realloc requires new_size > previous size")
 
             new_ptr = self.pymalloc.malloc(new_size)
             if new_ptr == NULL:
                 raise MemoryError("Error reallocating to %d bytes" % new_size)
 
-            memset(new_ptr, 0, new_size)
             memcpy(new_ptr, p, old_size)
-            self.size -= self.addresses.pop(<size_t>p)
+            memset(<char*> new_ptr + old_size, 0, new_size - old_size)
+            self.size += new_size - old_size
+            del self.addresses[<size_t>p]
             self.addresses[<size_t>new_ptr] = new_size
-            self.size += new_size
 
         self.pyfree.free(p)
         return new_ptr
