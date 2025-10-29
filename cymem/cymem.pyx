@@ -103,19 +103,20 @@ cdef class Pool:
             raise MemoryError("Error reallocating to %d bytes" % new_size)
 
         with cython.critical_section(self, self.addresses):
-            if <size_t>p not in self.addresses:
+            try:
+                old_size = self.addresses.pop(<size_t>p)
+            except KeyError:
                 self.pyfree.free(new_ptr)
                 raise ValueError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
 
-            old_size = self.addresses[<size_t>p]
             if new_size <= old_size:
                 self.pyfree.free(new_ptr)
+                self.addresses[<size_t>p] = old_size
                 raise ValueError("Realloc requires new_size > previous size")
 
             memcpy(new_ptr, p, old_size)
             memset(<char*> new_ptr + old_size, 0, new_size - old_size)
             self.size += new_size - old_size
-            del self.addresses[<size_t>p]
             self.addresses[<size_t>new_ptr] = new_size
 
         self.pyfree.free(p)
