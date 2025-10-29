@@ -51,10 +51,8 @@ cdef class Pool:
 
     def __cinit__(self, PyMalloc pymalloc=Default_Malloc,
                   PyFree pyfree=Default_Free):
-        # size, addresses and refs are mutable. Changing more than one of them
-        # requires locking to prevent data races. Changing one of them by calling
-        # Python operations is okay without locking because most Python operations
-        # are atomic.
+        # size, addresses and refs are mutable. note that operations on
+        # dicts and lists are atomic.
         self.size = 0
         self.addresses = {}
         self.refs = []
@@ -84,7 +82,7 @@ cdef class Pool:
         if p == NULL:
             raise MemoryError("Error assigning %d bytes" % (number * elem_size))
         memset(p, 0, number * elem_size)
-        with cython.critical_section(self):
+        with cython.critical_section(self, self.addresses):
             self.addresses[<size_t>p] = number * elem_size
             self.size += number * elem_size
         return p
@@ -99,16 +97,20 @@ cdef class Pool:
         """
         cdef size_t old_size
         cdef void* new_ptr
-        with cython.critical_section(self):
+
+        new_ptr = self.pymalloc.malloc(new_size)
+        if new_ptr == NULL:
+            raise MemoryError("Error reallocating to %d bytes" % new_size)
+
+        with cython.critical_section(self, self.addresses):
             if <size_t>p not in self.addresses:
+                self.pyfree.free(new_ptr)
                 raise ValueError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
+
             old_size = self.addresses[<size_t>p]
             if new_size <= old_size:
+                self.pyfree.free(new_ptr)
                 raise ValueError("Realloc requires new_size > previous size")
-
-            new_ptr = self.pymalloc.malloc(new_size)
-            if new_ptr == NULL:
-                raise MemoryError("Error reallocating to %d bytes" % new_size)
 
             memcpy(new_ptr, p, old_size)
             memset(<char*> new_ptr + old_size, 0, new_size - old_size)
@@ -127,7 +129,7 @@ cdef class Pool:
 
         If p is not in Pool.addresses, a KeyError is raised.
         """
-        with cython.critical_section(self):
+        with cython.critical_section(self, self.addresses):
             self.size -= self.addresses.pop(<size_t>p)
         self.pyfree.free(p)
 

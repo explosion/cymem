@@ -211,6 +211,12 @@ free-threaded builds (PEP 703). All operations on the Pool, including `alloc()`,
     thread-safe.
 
 **Important notes:**
-- Individual `Pool` instances are thread-safe, but you are still responsible
-    for proper synchronization when accessing the memory contents themselves.
+- Individual Pool instances are thread-safe, but you are still responsible for
+    proper synchronization when accessing the memory contents themselves. Note
+    that holding a lock on the Pool itself is typically not the right approach:
+    since malloc is thread-safe, memory allocated by separate calls to `alloc`
+    can be safely accessed concurrently without locking. You should only
+    synchronize access to specific memory regions that are being shared across
+    threads, using fine-grained locks appropriate to your use case rather than a
+    coarse-grained lock on the entire `Pool`.
 - Custom memory allocators need to be thread-safe themselves.
