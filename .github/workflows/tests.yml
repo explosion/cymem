@@ -24,20 +24,22 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python_version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
-        include:
-          - os: windows-2019
-            python_version: "3.6"
-          - os: ubuntu-20.04
-            python_version: "3.6"
+        python_version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        exclude:
+          # The 3.9/3.10 arm64 Python binaries that `setup-python` tries to use
+          # don't work on macOS 15 anymore, so skip those.
+          - os: macos-latest
+            python_version: "3.9"
+          - os: macos-latest
+            python_version: "3.10"
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure Python version
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python_version }}
           architecture: x64
