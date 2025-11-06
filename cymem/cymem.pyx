@@ -117,7 +117,7 @@ cdef class Pool:
                 self.pyfree.free(new_ptr)
                 raise ValueError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
 
-            if new_size <= old_size:
+            if old_size >= new_size:
                 self.pyfree.free(new_ptr)
                 self.addresses[<size_t>p] = old_size
                 raise ValueError("Realloc requires new_size > previous size")
