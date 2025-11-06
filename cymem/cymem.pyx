@@ -82,6 +82,12 @@ cdef class Pool:
         if p == NULL:
             raise MemoryError("Error assigning %d bytes" % (number * elem_size))
         memset(p, 0, number * elem_size)
+
+        # We need a critical section on both self and self.addresses here.
+        # If we were just to acquire a crtitical section on self, mutating
+        # self.addresses would implicitly acquire a critical section on
+        # self.addresses, which would release our critical section on self,
+        # potentially allowing another thread to interleave.
         with cython.critical_section(self, self.addresses):
             self.addresses[<size_t>p] = number * elem_size
             self.size += number * elem_size
@@ -102,6 +108,8 @@ cdef class Pool:
         if new_ptr == NULL:
             raise MemoryError("Error reallocating to %d bytes" % new_size)
 
+        # We need a critical section on both self and self.addresses here.
+        # See comment in alloc for rationale.
         with cython.critical_section(self, self.addresses):
             try:
                 old_size = self.addresses.pop(<size_t>p)
@@ -130,6 +138,8 @@ cdef class Pool:
 
         If p is not in Pool.addresses, a KeyError is raised.
         """
+        # We need a critical section on both self and self.addresses here.
+        # See comment in alloc for rationale.
         with cython.critical_section(self, self.addresses):
             self.size -= self.addresses.pop(<size_t>p)
         self.pyfree.free(p)
