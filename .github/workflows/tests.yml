@@ -19,8 +19,7 @@ env:
 jobs:
   tests:
     name: Test
-    # TODO: Uncomment this before upstream PR
-    # if: github.repository_owner == 'explosion'
+    if: github.repository_owner == 'explosion'
     strategy:
       fail-fast: false
       matrix:
