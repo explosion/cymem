@@ -141,7 +141,10 @@ cdef class Pool:
         # We need a critical section on both self and self.addresses here.
         # See comment in alloc for rationale.
         with cython.critical_section(self, self.addresses):
-            self.size -= self.addresses.pop(<size_t>p)
+            # The cast to size_t below is needed so that Cython
+            # does not call into the C API to do the subtraction,
+            # which could potentially release the critical section.
+            self.size -= <size_t>self.addresses.pop(<size_t>p)
         self.pyfree.free(p)
 
     def own_pyref(self, object py_ref):
