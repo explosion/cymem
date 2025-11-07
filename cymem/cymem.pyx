@@ -47,6 +47,9 @@ cdef class Pool:
 
     Thread-safety:
         All public methods in this class can be safely called from multiple threads.
+        Testing the thread-safety of this class can be done by checking out the repository
+        at https://github.com/lysnikolaou/test-cymem-threadsafety and following the
+        instructions on the README.
     """
 
     def __cinit__(self, PyMalloc pymalloc=Default_Malloc,
@@ -83,12 +86,14 @@ cdef class Pool:
             raise MemoryError("Error assigning %d bytes" % (number * elem_size))
         memset(p, 0, number * elem_size)
 
-        # We need a critical section on both self and self.addresses here.
-        # If we were just to acquire a crtitical section on self, mutating
-        # self.addresses would implicitly acquire a critical section on
-        # self.addresses, which would release our critical section on self,
-        # potentially allowing another thread to interleave.
-        with cython.critical_section(self, self.addresses):
+        # We need a critical section here so that addresses and size get
+        # updated atomically. If we were to acquire a critical section on self,
+        # mutating the dictionary would try to acquire a critical section on
+        # the dictionary and therefore release the critical section on self.
+        # Acquiring a critical section on self.addresses works because that's
+        # the only C API that gets called inside the block and acquiring the
+        # critical section on the top-most held lock does not release it.
+        with cython.critical_section(self.addresses):
             self.addresses[<size_t>p] = number * elem_size
             self.size += number * elem_size
         return p
@@ -108,9 +113,9 @@ cdef class Pool:
         if new_ptr == NULL:
             raise MemoryError("Error reallocating to %d bytes" % new_size)
 
-        # We need a critical section on both self and self.addresses here.
-        # See comment in alloc for rationale.
-        with cython.critical_section(self, self.addresses):
+        # See comment in alloc on why we're acquiring a critical section on
+        # self.addresses instead of self.
+        with cython.critical_section(self.addresses):
             try:
                 old_size = self.addresses.pop(<size_t>p)
             except KeyError:
@@ -118,8 +123,8 @@ cdef class Pool:
                 raise ValueError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
 
             if old_size >= new_size:
-                self.pyfree.free(new_ptr)
                 self.addresses[<size_t>p] = old_size
+                self.pyfree.free(new_ptr)
                 raise ValueError("Realloc requires new_size > previous size")
 
             memcpy(new_ptr, p, old_size)
@@ -138,12 +143,9 @@ cdef class Pool:
 
         If p is not in Pool.addresses, a KeyError is raised.
         """
-        # We need a critical section on both self and self.addresses here.
-        # See comment in alloc for rationale.
-        with cython.critical_section(self, self.addresses):
-            # The cast to size_t below is needed so that Cython
-            # does not call into the C API to do the subtraction,
-            # which could potentially release the critical section.
+        # See comment in alloc on why we're acquiring a critical section on
+        # self.addresses instead of self.
+        with cython.critical_section(self.addresses):
             self.size -= <size_t>self.addresses.pop(<size_t>p)
         self.pyfree.free(p)
 
