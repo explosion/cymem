@@ -143,10 +143,13 @@ cdef class Pool:
 
         If p is not in Pool.addresses, a KeyError is raised.
         """
+        cdef size_t size
+
         # See comment in alloc on why we're acquiring a critical section on
         # self.addresses instead of self.
         with cython.critical_section(self.addresses):
-            self.size -= <size_t>self.addresses.pop(<size_t>p)
+            size = self.addresses.pop(<size_t>p)
+            self.size -= size
         self.pyfree.free(p)
 
     def own_pyref(self, object py_ref):
