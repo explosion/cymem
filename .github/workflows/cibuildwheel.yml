@@ -14,7 +14,6 @@ jobs:
       contents: write
       actions: read
     with:
-      pure-python: false
+      wheel-name-pattern: 'cymem-*.whl'
     secrets:
       gh-token: ${{ secrets.GITHUB_TOKEN }}
-

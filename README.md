@@ -195,3 +195,28 @@ objects, but we'd still like the laziness of the `Pool`.
 from cymem.cymem cimport Pool, WrapMalloc, WrapFree
 cdef Pool mem = Pool(WrapMalloc(priv_malloc), WrapFree(priv_free))
 ```
+
+## Thread Safety
+
+As of version 2.0.12, `cymem.Pool` is thread-safe when used with CPython 3.13+
+free-threaded builds (PEP 703). All operations on the Pool, including `alloc()`,
+`free()`, and `realloc()`, can be safely called from multiple threads concurrently.
+
+**Key guarantees:**
+- Multiple threads can safely call `alloc()`, `free()`, and `realloc()` on the
+    same `Pool` instance.
+- The Pool's internal bookkeeping (`addresses` dict and `size` accounting) is
+    protected from race conditions. Reading the internal state without
+    holding a lock on the `Pool` instance via a critical section is not
+    thread-safe.
+
+**Important notes:**
+- Individual Pool instances are thread-safe, but you are still responsible for
+    proper synchronization when accessing the memory contents themselves. Note
+    that holding a lock on the Pool itself is typically not the right approach:
+    since malloc is thread-safe, memory allocated by separate calls to `alloc`
+    can be safely accessed concurrently without locking. You should only
+    synchronize access to specific memory regions that are being shared across
+    threads, using fine-grained locks appropriate to your use case rather than a
+    coarse-grained lock on the entire `Pool`.
+- Custom memory allocators need to be thread-safe themselves.

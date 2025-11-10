@@ -1,7 +1,7 @@
-# cython: embedsignature=True
+# cython: embedsignature=True, freethreading_compatible=True
 
+cimport cython
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
-from cpython.ref cimport Py_INCREF, Py_DECREF
 from libc.string cimport memset
 from libc.string cimport memcpy
 import warnings
@@ -44,17 +44,29 @@ cdef class Pool:
         addresses (dict): The currently allocated addresses and their sizes. Read-only.
         pymalloc (PyMalloc): The allocator to use (default uses PyMem_Malloc).
         pyfree (PyFree): The free to use (default uses PyMem_Free).
+
+    Thread-safety:
+        All public methods in this class can be safely called from multiple threads.
+        Testing the thread-safety of this class can be done by checking out the repository
+        at https://github.com/lysnikolaou/test-cymem-threadsafety and following the
+        instructions on the README.
     """
 
     def __cinit__(self, PyMalloc pymalloc=Default_Malloc,
                   PyFree pyfree=Default_Free):
+        # size, addresses and refs are mutable. note that operations on
+        # dicts and lists are atomic.
         self.size = 0
         self.addresses = {}
         self.refs = []
+
+        # pymalloc and pyfree are immutable.
         self.pymalloc = pymalloc
         self.pyfree = pyfree
 
     def __dealloc__(self):
+        # No need for locking here since the methods will be unreachable
+        # by the time __dealloc__ is called
         cdef size_t addr
         if self.addresses is not None:
             for addr in self.addresses:
@@ -73,8 +85,17 @@ cdef class Pool:
         if p == NULL:
             raise MemoryError("Error assigning %d bytes" % (number * elem_size))
         memset(p, 0, number * elem_size)
-        self.addresses[<size_t>p] = number * elem_size
-        self.size += number * elem_size
+
+        # We need a critical section here so that addresses and size get
+        # updated atomically. If we were to acquire a critical section on self,
+        # mutating the dictionary would try to acquire a critical section on
+        # the dictionary and therefore release the critical section on self.
+        # Acquiring a critical section on self.addresses works because that's
+        # the only C API that gets called inside the block and acquiring the
+        # critical section on the top-most held lock does not release it.
+        with cython.critical_section(self.addresses):
+            self.addresses[<size_t>p] = number * elem_size
+            self.size += number * elem_size
         return p
 
     cdef void* realloc(self, void* p, size_t new_size) except NULL:
@@ -82,19 +103,36 @@ cdef class Pool:
         a non-NULL pointer to the new block. new_size must be larger than the
         original.
 
-        If p is not in the Pool or new_size is 0, a MemoryError is raised.
+        If p is not in the Pool or new_size isn't larger than the previous size,
+        a ValueError is raised.
         """
-        if <size_t>p not in self.addresses:
-            raise ValueError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
-        if new_size == 0:
-            raise ValueError("Realloc requires new_size > 0")
-        assert new_size > self.addresses[<size_t>p]
-        cdef void* new_ptr = self.alloc(1, new_size)
+        cdef size_t old_size
+        cdef void* new_ptr
+
+        new_ptr = self.pymalloc.malloc(new_size)
         if new_ptr == NULL:
             raise MemoryError("Error reallocating to %d bytes" % new_size)
-        memcpy(new_ptr, p, self.addresses[<size_t>p])
-        self.free(p)
-        self.addresses[<size_t>new_ptr] = new_size
+
+        # See comment in alloc on why we're acquiring a critical section on
+        # self.addresses instead of self.
+        with cython.critical_section(self.addresses):
+            try:
+                old_size = self.addresses.pop(<size_t>p)
+            except KeyError:
+                self.pyfree.free(new_ptr)
+                raise ValueError("Pointer %d not found in Pool %s" % (<size_t>p, self.addresses))
+
+            if old_size >= new_size:
+                self.addresses[<size_t>p] = old_size
+                self.pyfree.free(new_ptr)
+                raise ValueError("Realloc requires new_size > previous size")
+
+            memcpy(new_ptr, p, old_size)
+            memset(<char*> new_ptr + old_size, 0, new_size - old_size)
+            self.size += new_size - old_size
+            self.addresses[<size_t>new_ptr] = new_size
+
+        self.pyfree.free(p)
         return new_ptr
 
     cdef void free(self, void* p) except *:
@@ -105,10 +143,17 @@ cdef class Pool:
 
         If p is not in Pool.addresses, a KeyError is raised.
         """
-        self.size -= self.addresses.pop(<size_t>p)
+        cdef size_t size
+
+        # See comment in alloc on why we're acquiring a critical section on
+        # self.addresses instead of self.
+        with cython.critical_section(self.addresses):
+            size = self.addresses.pop(<size_t>p)
+            self.size -= size
         self.pyfree.free(p)
 
     def own_pyref(self, object py_ref):
+        # Calling append here is atomic, no critical section needed.
         self.refs.append(py_ref)
 
 
@@ -142,9 +187,9 @@ cdef class Address:
             raise MemoryError("Error assigning %d bytes" % number * elem_size)
         memset(self.ptr, 0, number * elem_size)
 
-    property addr:
-        def __get__(self):
-            return <size_t>self.ptr
+    @property
+    def addr(self):
+        return <size_t>self.ptr
 
     def __dealloc__(self):
         if self.ptr != NULL:
