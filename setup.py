@@ -89,6 +89,7 @@ def setup_package():
 
         setup(
             name="cymem",
+            python_requires=">=3.9,<3.15",
             zip_safe=False,
             packages=PACKAGES,
             package_data={"": ["*.pyx", "*.pxd"]},
