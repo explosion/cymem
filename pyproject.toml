@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
 build = "*"
-skip = "pp* cp36* cp37* cp38*"
+skip = "cp38*"
 test-skip = ""
 enable = ["cpython-freethreading"]
 
