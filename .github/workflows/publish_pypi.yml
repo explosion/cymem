@@ -4,12 +4,37 @@
 # upload, and then hit 'publish', which uploads to PyPi.
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - 'release-v[0-9]+.[0-9]+.[0-9]+**'
 
 jobs:
+  push_version_tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract version and push tag
+        run: |
+          # Extract the tag that triggered this workflow
+          TRIGGER_TAG="${GITHUB_REF#refs/tags/}"
+          echo "Trigger tag: $TRIGGER_TAG"
+          
+          # Remove 'release-' prefix to get the version tag
+          VERSION_TAG="${TRIGGER_TAG#release-}"
+          echo "Version tag: $VERSION_TAG"
+          
+          # Configure git
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          # Create and push the version tag
+          git tag "$VERSION_TAG" -m "Version $VERSION_TAG"
+          git push origin "$VERSION_TAG"
+
   upload_pypi:
+    needs: push_version_tag
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -17,13 +42,10 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    if: github.event_name == 'release' && github.event.action == 'published'
-    # or, alternatively, upload to PyPI on every tag starting with 'v' (remove on: release above to use this)
-    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: robinraju/release-downloader@v1
         with:
-          tag: ${{ github.event.release.tag_name }}
+          tag: ${{ github.ref_name }}
           fileName: '*'
           out-file-path: 'dist'
       - uses: pypa/gh-action-pypi-publish@release/v1
