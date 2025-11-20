@@ -27,10 +27,14 @@ jobs:
         python_version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         exclude:
           # The 3.9/3.10 arm64 Python binaries that `setup-python` tries to use
-          # don't work on macOS 15 anymore, so skip those.
+          # don't work on macOS 15 & windows arm64 anymore, so skip those.
           - os: macos-latest
             python_version: "3.9"
           - os: macos-latest
+            python_version: "3.10"
+          - os: windows-11-arm
+            python_version: "3.9"
+          - os: windows-11-arm
             python_version: "3.10"
     runs-on: ${{ matrix.os }}
 
@@ -42,7 +46,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python_version }}
-          architecture: x64
+          architecture: ${{ matrix.os == 'windows-11-arm' && 'arm64' || 'x64' }}
 
       - name: Build sdist
         run: |
