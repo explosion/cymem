@@ -12,7 +12,8 @@ on:
     paths-ignore:
       - "*.md"
 
-permissions: {}
+permissions:
+  contents: read
 
 env:
   MODULE_NAME: 'cymem'
