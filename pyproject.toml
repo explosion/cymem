@@ -9,7 +9,6 @@ build-backend = "setuptools.build_meta"
 build = "*"
 skip = "pp* cp36* cp37* cp38*"
 test-skip = ""
-enable = ["cpython-freethreading"]
 
 archs = ["native"]
 
