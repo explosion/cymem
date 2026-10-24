@@ -12,7 +12,7 @@ permissions: {}
 
 jobs:
   build_wheels:
-    uses: explosion/gha-cibuildwheel/.github/workflows/cibuildwheel.yml@ca1960889c69975c9c9620070b77ac157cda439c # main
+    uses: explosion/gha-cibuildwheel/.github/workflows/cibuildwheel.yml@3b35a93e25c8b4556ce1122e2adde14e562e5405 # main
     permissions:
       contents: write
       actions: read
